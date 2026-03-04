@@ -1,0 +1,128 @@
+---
+title: Adding the Component
+description: Learn how to add the CentralisedUIData component to your Unity UI elements
+---
+
+The `CentralisedUIData` component is the core of the Centralised UI package. It allows you to apply centralized styling to any Unity Selectable element (Button, Toggle, Slider, etc.).
+
+## Prerequisites
+
+<Warning>
+The `CentralisedUIData` component requires a Selectable component to function. The component uses the `[RequireComponent(typeof(Selectable))]` attribute, so Unity will automatically add a Selectable if one doesn't exist.
+</Warning>
+
+## Method 1: Add to Existing GameObject
+
+Use this method when you already have a UI element in your scene and want to add centralized styling to it.
+
+<Steps>
+  <Step title="Select your UI GameObject">
+    In the Hierarchy window, select the GameObject that has a Selectable component (Button, Toggle, Slider, etc.).
+  </Step>
+
+  <Step title="Add the component">
+    In the Inspector window, click **Add Component** and search for `CentralisedUIData` or navigate to:
+    ```text
+    ProgramadorCastellano > CentralisedUI > CentralisedUIData
+    ```
+  </Step>
+
+  <Step title="Configure the component">
+    Once added, you'll see the component in the Inspector with the following fields:
+    
+    - **Transition Mode**: Dropdown to select how the UI element transitions (ColorTint, SpriteSwap, Animation, or None)
+    - **Color Tint SO**: Reference to a ColorTint ScriptableObject for color-based transitions
+    - **Sprite Swap SO**: Reference to a SpriteSwap ScriptableObject for sprite-based transitions
+    - **Animation SO**: Reference to an Animation ScriptableObject for animation-based transitions
+    - **Apply Skin**: Button to manually apply the skin in the editor
+  </Step>
+</Steps>
+
+<Note>
+The component comes with 3 default ScriptableObjects already assigned, one for each transition type. You can use these as-is or create your own custom ScriptableObjects.
+</Note>
+
+## Method 2: Create New GameObject with Component
+
+Use this method to create a new UI element that already has the `CentralisedUIData` component attached.
+
+<Steps>
+  <Step title="Open the Unity menu">
+    In the Unity Editor, navigate to the top menu and select:
+    ```text
+    GameObject > UI > ProgramadorCastellano > CentralisedUI
+    ```
+  </Step>
+
+  <Step title="Choose your UI element type">
+    Select one of the available pre-configured UI elements:
+    
+    - **UI Data Button**: Button with CentralisedUIData component
+    - **UI Data Toggle**: Toggle with CentralisedUIData component
+    - **UI Data Slider**: Slider with CentralisedUIData component
+    - **UI Data Scrollbar**: Scrollbar with CentralisedUIData component
+    - **UI Data ScrollView**: ScrollView with CentralisedUIData component
+    - **UI Data Dropdown**: Dropdown with CentralisedUIData component
+    - **UI Data InputField**: InputField with CentralisedUIData component
+  </Step>
+
+  <Step title="Position and configure">
+    The new GameObject will be created in your scene hierarchy. If you have a Canvas selected, it will be added as a child. Otherwise, a new Canvas will be created.
+    
+    The GameObject will have:
+    - The appropriate Selectable component (Button, Toggle, etc.)
+    - The CentralisedUIData component already attached
+    - Default sprites and TextMeshPro components configured
+  </Step>
+</Steps>
+
+<Tip>
+Creating UI elements from the Unity menu (Method 2) is faster when building new interfaces, as it sets up all the necessary components and hierarchy in one step.
+</Tip>
+
+## Understanding the Inspector Fields
+
+### Transition Mode
+This dropdown mirrors Unity's built-in Selectable transition modes:
+- **ColorTint**: Changes colors on interaction (uses ColorBlock)
+- **SpriteSwap**: Swaps sprites on interaction (uses SpriteState)
+- **Animation**: Triggers animations on interaction (uses AnimationTriggers)
+- **None**: No visual feedback on interaction
+
+### ScriptableObject References
+
+Depending on your selected Transition Mode, assign the corresponding ScriptableObject:
+
+- **Color Tint SO**: Assign a `CentralisedUIColorTintSO` asset when using ColorTint mode
+- **Sprite Swap SO**: Assign a `CentralisedUISpriteSwapSO` asset when using SpriteSwap mode
+- **Animation SO**: Assign a `CentralisedUIAnimationSO` asset when using Animation mode
+
+<Note>
+You only need to assign the ScriptableObject that matches your selected Transition Mode. The other fields can remain empty.
+</Note>
+
+### Apply Skin Button
+
+The **Apply Skin** button allows you to preview your skin changes in the editor without entering Play mode. When clicked, it:
+
+1. Sets the Selectable's transition mode to match your selection
+2. Applies the data from the assigned ScriptableObject to the Selectable
+3. Updates the Inspector to show the changes
+
+<Tip>
+You don't need to click "Apply Skin" every time during runtime. The component automatically applies the skin in the `Awake()` method when the scene loads (source: `CentralisedUIData.cs:23-28`).
+</Tip>
+
+## Next Steps
+
+Now that you've added the component, you'll want to:
+
+<CardGroup cols={2}>
+  <Card title="Create ScriptableObjects" icon="file" href="/guides/creating-scriptable-objects">
+    Learn how to create and configure ColorTint, SpriteSwap, and Animation ScriptableObjects
+  </Card>
+  
+  <Card title="Apply Skins" icon="paint-brush" href="/guides/applying-skins">
+    Understand how to apply and update skins at editor-time and runtime
+  </Card>
+</CardGroup>

@@ -1,0 +1,230 @@
+---
+title: "Transition Modes"
+description: "Understanding Unity's Selectable transition modes and how they're applied in Centralised UI"
+---
+
+## Overview
+
+Centralised UI supports all transition modes available in Unity's `Selectable` component. Each mode provides a different way to give visual feedback when users interact with UI elements.
+
+The transition mode is set on the `CentralisedUIData` component and determines which ScriptableObject data will be applied to the Selectable.
+
+<Tip>
+  **Choosing a Transition Mode**: ColorTint is the most common and performant option. Use SpriteSwap for pixel-art styles or when you need completely different visuals per state. Use Animation for complex, multi-property transitions.
+</Tip>
+
+## The Three Transition Modes
+
+<Tabs>
+  <Tab title="Color Tint">
+    ### Color Tint
+
+    Color Tint is the most commonly used transition mode. It modifies the color of the UI element based on its interaction state (Normal, Highlighted, Pressed, Selected, Disabled).
+
+    #### How It Works
+
+    When Color Tint is selected, the system applies a `ColorBlock` structure from a `CentralisedUIColorTintSO` asset:
+
+    ```csharp
+    // From CentralisedUIData.cs:36
+    { Selectable.Transition.ColorTint, () => _selectable.colors = _colorTintSO.Colors }
+    ```
+
+    #### Data Structure
+
+    The `ColorBlock` contains:
+    - **Normal Color** - Default state color
+    - **Highlighted Color** - Mouse hover state
+    - **Pressed Color** - Click/touch state
+    - **Selected Color** - When the element is selected
+    - **Disabled Color** - When interactable is false
+    - **Color Multiplier** - Multiplies the graphic color
+    - **Fade Duration** - Transition animation speed
+
+    #### When to Use
+
+    <Check>Best for most UI elements (buttons, toggles, sliders)</Check>
+    <Check>Performant - no sprite swapping or animator overhead</Check>
+    <Check>Works well with both Image and Text components</Check>
+    <Check>Allows smooth color transitions</Check>
+
+    #### Creating the Asset
+
+    Create via: **Assets > Create > ProgramadorCastellano/CentralisedUI/ColorTint**
+
+    ```csharp
+    // CentralisedUIColorTintSO.cs
+    [CreateAssetMenu(menuName = "ProgramadorCastellano/CentralisedUI/ColorTint", order = 1)]
+    public class CentralisedUIColorTintSO : ScriptableObject
+    {
+        [SerializeField] ColorBlock _colors = ColorBlock.defaultColorBlock;
+        public ColorBlock Colors => _colors;
+    }
+    ```
+  </Tab>
+
+  <Tab title="Sprite Swap">
+    ### Sprite Swap
+
+    Sprite Swap changes the sprite image based on the interaction state. This is ideal for pixel-art UIs or when you need completely different graphics per state.
+
+    #### How It Works
+
+    When Sprite Swap is selected, the system applies a `SpriteState` structure from a `CentralisedUISpriteSwapSO` asset:
+
+    ```csharp
+    // From CentralisedUIData.cs:37
+    { Selectable.Transition.SpriteSwap, () => _selectable.spriteState = _spriteSwapSO.Sprites }
+    ```
+
+    #### Data Structure
+
+    The `SpriteState` contains:
+    - **Highlighted Sprite** - Sprite for mouse hover
+    - **Pressed Sprite** - Sprite for click/touch
+    - **Selected Sprite** - Sprite when selected
+    - **Disabled Sprite** - Sprite when disabled
+
+    <Note>
+      The normal/default sprite is set on the Image component itself, not in the SpriteState.
+    </Note>
+
+    #### When to Use
+
+    <Check>Pixel-art or retro-style UIs</Check>
+    <Check>When you need dramatically different visuals per state</Check>
+    <Check>UI elements with pre-rendered state graphics</Check>
+
+    #### Creating the Asset
+
+    Create via: **Assets > Create > ProgramadorCastellano/CentralisedUI/SpriteSwap**
+
+    ```csharp
+    // CentralisedUISpriteSwapSO.cs
+    [CreateAssetMenu(menuName = "ProgramadorCastellano/CentralisedUI/SpriteSwap", order = 2)]
+    public class CentralisedUISpriteSwapSO : ScriptableObject
+    {
+        [SerializeField] SpriteState _sprites;
+        public SpriteState Sprites => _sprites;
+    }
+    ```
+
+    <Warning>
+      Sprite Swap requires all state sprites to have the same dimensions and pivot points for smooth transitions.
+    </Warning>
+  </Tab>
+
+  <Tab title="Animation">
+    ### Animation
+
+    Animation mode triggers Animator parameters to control state transitions. This allows for complex, multi-property animations using Unity's Animator system.
+
+    #### How It Works
+
+    When Animation is selected, the system applies `AnimationTriggers` from a `CentralisedUIAnimationSO` asset:
+
+    ```csharp
+    // From CentralisedUIData.cs:38
+    { Selectable.Transition.Animation, () => _selectable.animationTriggers = _animationSO.Animations }
+    ```
+
+    #### Data Structure
+
+    The `AnimationTriggers` contains trigger names for:
+    - **Normal Trigger** - Trigger for normal state
+    - **Highlighted Trigger** - Trigger for highlighted state
+    - **Pressed Trigger** - Trigger for pressed state
+    - **Selected Trigger** - Trigger for selected state
+    - **Disabled Trigger** - Trigger for disabled state
+
+    <Info>
+      These are **trigger names** (strings) that must match parameters in the Animator Controller attached to your UI element.
+    </Info>
+
+    #### When to Use
+
+    <Check>Complex UI animations (scale, rotation, multi-property changes)</Check>
+    <Check>UI elements with particle effects or sound</Check>
+    <Check>When you need timeline-based animations</Check>
+    <Check>Advanced visual feedback requirements</Check>
+
+    #### Creating the Asset
+
+    Create via: **Assets > Create > ProgramadorCastellano/CentralisedUI/Animation**
+
+    ```csharp
+    // CentralisedUIAnimationSO.cs
+    [CreateAssetMenu(menuName = "ProgramadorCastellano/CentralisedUI/Animation", order = 3)]
+    public class CentralisedUIAnimationSO : ScriptableObject
+    {
+        [SerializeField] AnimationTriggers _animations;
+        public AnimationTriggers Animations => _animations;
+    }
+    ```
+
+    #### Setup Requirements
+
+    When using Animation mode:
+    1. Add an **Animator** component to your UI element
+    2. Create an **Animator Controller** with matching trigger parameters
+    3. Create animation clips for each state
+    4. Assign the controller to the Animator
+    5. Set the trigger names in your CentralisedUIAnimationSO asset
+
+    <Warning>
+      Animation mode has more overhead than Color Tint or Sprite Swap. Use it only when you need the additional complexity.
+    </Warning>
+  </Tab>
+</Tabs>
+
+## None Transition Mode
+
+You can also set the transition to `None` if you want no visual feedback. This is useful for UI elements that provide feedback through other means (sound, haptics, etc.).
+
+<Note>
+  When transition mode is set to `None`, the system will log a warning: `"Transition mode 'None' not implemented"` (see CentralisedUIData.cs:52). This is expected behavior since None doesn't require any data.
+</Note>
+
+## Transition Mode Selection
+
+The transition mode is selected in the `CentralisedUIData` component inspector:
+
+```csharp
+// From CentralisedUIData.cs:11
+[SerializeField] Selectable.Transition _transitionMode = Selectable.Transition.ColorTint;
+```
+
+The component provides separate fields for each transition type's ScriptableObject:
+
+```csharp
+[Header("Color Tint")]
+[SerializeField] CentralisedUIColorTintSO _colorTintSO = default;
+[Header("Sprite Swap")]
+[SerializeField] CentralisedUISpriteSwapSO _spriteSwapSO = default;
+[Header("Animation")]
+[SerializeField] CentralisedUIAnimationSO _animationSO = default;
+```
+
+<Tip>
+  Assign ScriptableObjects for all modes you might use. You can then switch between modes by changing the dropdown, and the appropriate data will be applied automatically.
+</Tip>
+
+## Performance Comparison
+
+| Mode | Performance | Flexibility | Setup Complexity |
+|------|-------------|-------------|------------------|
+| **Color Tint** | Excellent | Good | Low |
+| **Sprite Swap** | Good | Medium | Medium |
+| **Animation** | Medium | Excellent | High |
+| **None** | Excellent | None | None |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="ScriptableObjects" icon="file-code" href="/concepts/scriptable-objects">
+    Learn how to create and configure the ScriptableObject assets
+  </Card>
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Get started with your first centralized UI setup
+  </Card>
+</CardGroup>

@@ -1,97 +1,225 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+mode: "custom"
 ---
 
-## Setting up
+<div className="relative bg-gradient-to-br from-[#5B47E5] via-[#7B5FF0] to-[#8B7FF5] dark:from-[#3D2FB5] dark:via-[#5B47E5] dark:to-[#7B5FF0] py-20">
+  <div className="max-w-6xl mx-auto px-6 lg:px-8">
+    <div className="grid lg:grid-cols-12 gap-8 items-center">
+      <div className="lg:col-span-7">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+          Centralised UI for Unity
+        </h1>
+        <p className="text-lg sm:text-xl text-white/90 max-w-2xl mb-8">
+          Manage UI element styling across your Unity project from a single location. Use ScriptableObjects to control colors, sprites, and animations for all your selectables.
+        </p>
+        <div className="flex flex-wrap gap-4">
+          <a
+            href="/quickstart"
+            className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-white text-[#5B47E5] font-semibold hover:bg-white/90 transition-colors no-underline"
+          >
+            Get Started
+          </a>
+          <a
+            href="/installation"
+            className="inline-flex items-center justify-center px-6 py-3 rounded-lg border-2 border-white/30 bg-white/10 text-white font-semibold hover:bg-white/20 transition-colors no-underline"
+          >
+            Installation Guide
+          </a>
+        </div>
+      </div>
+      <div className="lg:col-span-5 hidden lg:flex justify-center">
+        <div className="relative w-full max-w-md">
+          <div className="aspect-square rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
+            <svg className="w-32 h-32 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-Get your documentation site up and running in minutes.
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <div className="mb-16">
+    <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white mb-3">
+      Quick Start
+    </h2>
+    <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+      Get up and running with Centralised UI in minutes.
+    </p>
+    
+    <Steps>
+      <Step title="Install the Package">
+        Add Centralised UI to your Unity project via the Package Manager using the Git URL or download from the repository.
+        
+        ```text
+        https://github.com/Sadrmm/CentralisedUI.git
+        ```
+      </Step>
+      
+      <Step title="Add Component to GameObject">
+        Select your UI Selectable (Button, Toggle, Slider, etc.) and add the **CentralisedUIData** component through the Inspector or create a new GameObject with the component pre-added from the Unity Editor menu under **UI > ProgramadorCastellano > CentralisedUI**.
+      </Step>
+      
+      <Step title="Create ScriptableObjects">
+        Right-click in your Project window, navigate to **Create > ProgramadorCastellano > CentralisedUI** and choose the transition type you need:
+        - **ColorTint** for color-based transitions
+        - **SpriteSwap** for sprite-based transitions  
+        - **Animation** for animation-based transitions
+      </Step>
+      
+      <Step title="Apply Your Skin">
+        Assign your created ScriptableObject to the component, select your transition mode, and click the **Apply Skin** button. Your UI styling will be applied instantly and persist across all selectables using the same ScriptableObject.
+      </Step>
+    </Steps>
+  </div>
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+  <div className="mb-16">
+    <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white mb-3">
+      Explore the Documentation
+    </h2>
+    <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+      Learn everything you need to master Centralised UI in your Unity projects.
+    </p>
+    
+    <CardGroup cols={2}>
+      <Card
+        title="Core Concepts"
+        icon="lightbulb"
+        href="/concepts/overview"
+      >
+        Understand how Centralised UI works and the architecture behind ScriptableObject-based styling.
+      </Card>
+      <Card
+        title="Transition Modes"
+        icon="palette"
+        href="/concepts/transition-modes"
+      >
+        Learn about ColorTint, SpriteSwap, and Animation transition modes and when to use each.
+      </Card>
+      <Card
+        title="Adding Components"
+        icon="plus-circle"
+        href="/guides/adding-component"
+      >
+        Step-by-step guide to adding the CentralisedUIData component to your UI elements.
+      </Card>
+      <Card
+        title="Creating ScriptableObjects"
+        icon="cube"
+        href="/guides/creating-scriptable-objects"
+      >
+        Create and configure ColorTint, SpriteSwap, and Animation ScriptableObjects for your UI.
+      </Card>
+    </CardGroup>
+  </div>
 
-## Make it yours
+  <div className="mb-16">
+    <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white mb-3">
+      Key Features
+    </h2>
+    <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+      Everything you need for centralized UI management in Unity.
+    </p>
+    
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="p-6 rounded-xl border dark:border-[#27272a] border-gray-200 dark:bg-[#1a1d27] bg-gray-50">
+        <div className="w-12 h-12 rounded-lg bg-[#5B47E5]/10 dark:bg-[#5B47E5]/20 flex items-center justify-center mb-4">
+          <svg className="w-6 h-6 text-[#5B47E5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v7a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-3zM14 16a1 1 0 011-1h4a1 1 0 011 1v3a1 1 0 01-1 1h-4a1 1 0 01-1-1v-3z" />
+          </svg>
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          ScriptableObject-Based
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Define UI styling once in ScriptableObjects and reuse across unlimited selectables.
+        </p>
+      </div>
+      
+      <div className="p-6 rounded-xl border dark:border-[#27272a] border-gray-200 dark:bg-[#1a1d27] bg-gray-50">
+        <div className="w-12 h-12 rounded-lg bg-[#5B47E5]/10 dark:bg-[#5B47E5]/20 flex items-center justify-center mb-4">
+          <svg className="w-6 h-6 text-[#5B47E5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+          </svg>
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          Three Transition Types
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Support for ColorTint, SpriteSwap, and Animation transitions matching Unity's built-in system.
+        </p>
+      </div>
+      
+      <div className="p-6 rounded-xl border dark:border-[#27272a] border-gray-200 dark:bg-[#1a1d27] bg-gray-50">
+        <div className="w-12 h-12 rounded-lg bg-[#5B47E5]/10 dark:bg-[#5B47E5]/20 flex items-center justify-center mb-4">
+          <svg className="w-6 h-6 text-[#5B47E5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+          Editor Integration
+        </h3>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Custom inspectors and Unity menu extensions for quick GameObject creation and skin application.
+        </p>
+      </div>
+    </div>
+  </div>
 
-Design a docs site that looks great and empowers your users.
+  <div className="mb-16">
+    <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white mb-3">
+      API Reference
+    </h2>
+    <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+      Detailed documentation for all components and ScriptableObjects.
+    </p>
+    
+    <CardGroup cols={2}>
+      <Card
+        title="CentralisedUIData"
+        icon="code"
+        href="/api/centralised-ui-data"
+      >
+        The main component that manages UI styling and applies ScriptableObject data to selectables.
+      </Card>
+      <Card
+        title="CentralisedUIColorTintSO"
+        icon="droplet"
+        href="/api/color-tint-so"
+      >
+        ScriptableObject for managing ColorBlock data used in ColorTint transition mode.
+      </Card>
+      <Card
+        title="CentralisedUISpriteSwapSO"
+        icon="image"
+        href="/api/sprite-swap-so"
+      >
+        ScriptableObject for managing SpriteState data used in SpriteSwap transition mode.
+      </Card>
+      <Card
+        title="CentralisedUIAnimationSO"
+        icon="play"
+        href="/api/animation-so"
+      >
+        ScriptableObject for managing AnimationTriggers used in Animation transition mode.
+      </Card>
+    </CardGroup>
+  </div>
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
-
-## Create beautiful pages
-
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+  <div className="rounded-2xl border dark:border-[#27272a] border-gray-200 dark:bg-[#1a1d27] bg-gray-50 p-8 sm:p-12 text-center">
+    <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white mb-4">
+      Ready to streamline your Unity UI workflow?
+    </h2>
+    <p className="text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-8">
+      Install Centralised UI today and start managing your UI styling from a single location. Say goodbye to manually updating each selectable.
+    </p>
+    <a
+      href="/quickstart"
+      className="inline-flex items-center justify-center px-8 py-3 rounded-lg bg-[#5B47E5] text-white font-semibold hover:bg-[#4B37D5] transition-colors no-underline"
+    >
+      Get Started Now
+    </a>
+  </div>
+</div>

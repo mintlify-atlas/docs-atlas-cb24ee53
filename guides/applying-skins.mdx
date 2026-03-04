@@ -1,0 +1,289 @@
+---
+title: Applying Skins
+description: Learn how to apply and update UI skins in the editor and at runtime
+---
+
+The Centralised UI package provides two ways to apply skins to your UI elements: manually in the editor using the "Apply Skin" button, or automatically at runtime when the scene loads.
+
+## How Skin Application Works
+
+When you apply a skin, the `CentralisedUIData` component calls the `OnSkinUI()` method, which:
+
+1. Sets the Selectable's `transition` mode to match your selected Transition Mode
+2. Applies the data from the assigned ScriptableObject to the Selectable component
+3. Updates the UI element's visual state
+
+The actual implementation uses a dictionary-based approach for efficiency (source: `CentralisedUIData.cs:34-39`):
+
+```csharp
+_transitionActions = new Dictionary<Selectable.Transition, UnityAction>()
+{
+    { Selectable.Transition.ColorTint, () => _selectable.colors = _colorTintSO.Colors },
+    { Selectable.Transition.SpriteSwap, () => _selectable.spriteState = _spriteSwapSO.Sprites },
+    { Selectable.Transition.Animation, () => _selectable.animationTriggers = _animationSO.Animations }
+};
+```
+
+## Editor-Time Application
+
+Use the "Apply Skin" button to preview and apply skin changes while working in the Unity Editor.
+
+<Steps>
+  <Step title="Select the UI GameObject">
+    In the Hierarchy window, select the GameObject with the `CentralisedUIData` component.
+  </Step>
+
+  <Step title="Configure the transition settings">
+    In the Inspector:
+    1. Choose a **Transition Mode** from the dropdown (ColorTint, SpriteSwap, Animation, or None)
+    2. Assign the appropriate ScriptableObject:
+       - For ColorTint: Assign a ColorTint SO
+       - For SpriteSwap: Assign a Sprite Swap SO
+       - For Animation: Assign an Animation SO
+  </Step>
+
+  <Step title="Click Apply Skin">
+    Click the **Apply Skin** button at the bottom of the CentralisedUIData component.
+    
+    The Selectable component's properties will immediately update to match your ScriptableObject settings.
+  </Step>
+
+  <Step title="Verify the changes">
+    Scroll down to the Selectable component in the Inspector to see the applied changes:
+    - For ColorTint: Check the Colors section
+    - For SpriteSwap: Check the Sprite State section
+    - For Animation: Check the Animation Triggers section
+  </Step>
+</Steps>
+
+<Note>
+The "Apply Skin" button works in editor mode thanks to the `#if UNITY_EDITOR` preprocessor directive in the `OnSkinUI()` method (source: `CentralisedUIData.cs:44-49`). This ensures the component is properly initialized even when called from the editor.
+</Note>
+
+<Tip>
+You can select multiple GameObjects with `CentralisedUIData` components and click "Apply Skin" to update them all at once. The custom editor supports multi-object editing (source: `CentralisedUIDataEditor.cs:8`).
+</Tip>
+
+## Runtime Application
+
+Skins are automatically applied at runtime without any additional code required.
+
+### Automatic Application on Scene Load
+
+When you enter Play mode or load a scene, the `CentralisedUIData` component's `Awake()` method automatically calls `OnSkinUI()` (source: `CentralisedUIData.cs:23-28`):
+
+```csharp
+private void Awake()
+{
+    Initialize();
+    OnSkinUI();
+}
+```
+
+This means:
+- You don't need to click "Apply Skin" before running your game
+- Every UI element with `CentralisedUIData` will have the correct skin on start
+- The skin data comes from whatever ScriptableObject is assigned in the Inspector
+
+<Warning>
+Make sure to assign ScriptableObjects to your CentralisedUIData components before building your game. If a ScriptableObject reference is null, the component won't be able to apply the skin and may log a warning.
+</Warning>
+
+## Updating Skins at Runtime
+
+One of the most powerful features of the Centralised UI system is the ability to change all UI elements at once by modifying the ScriptableObject.
+
+### Approach 1: Modify ScriptableObject Values
+
+You can programmatically change ScriptableObject values at runtime:
+
+```csharp
+using UnityEngine;
+using ProgramadorCastellano.CentralisedUI;
+
+public class ThemeManager : MonoBehaviour
+{
+    [SerializeField] private CentralisedUIColorTintSO buttonTheme;
+    
+    public void SwitchToDarkMode()
+    {
+        // Modify the ColorBlock stored in the ScriptableObject
+        ColorBlock newColors = buttonTheme.Colors;
+        newColors.normalColor = new Color(0.2f, 0.2f, 0.2f); // Dark gray
+        newColors.highlightedColor = new Color(0.3f, 0.3f, 0.3f);
+        
+        // Note: ScriptableObject fields are read-only properties
+        // You may need to use reflection or add setter methods
+    }
+}
+```
+
+<Note>
+The ScriptableObject classes expose their data as read-only properties (`public ColorBlock Colors => _colors;`). To modify them at runtime, you would need to either:
+1. Add public setter methods to the ScriptableObject classes
+2. Create different ScriptableObjects for different themes and swap the references
+3. Use reflection (not recommended for production)
+</Note>
+
+### Approach 2: Swap ScriptableObject References (Recommended)
+
+A better approach is to create multiple ScriptableObjects for different themes and swap references:
+
+```csharp
+using UnityEngine;
+using ProgramadorCastellano.CentralisedUI;
+
+public class ThemeManager : MonoBehaviour
+{
+    [SerializeField] private CentralisedUIColorTintSO lightTheme;
+    [SerializeField] private CentralisedUIColorTintSO darkTheme;
+    [SerializeField] private CentralisedUIData[] uiElements;
+    
+    public void SwitchTheme(bool isDarkMode)
+    {
+        CentralisedUIColorTintSO targetTheme = isDarkMode ? darkTheme : lightTheme;
+        
+        foreach (var uiElement in uiElements)
+        {
+            // Assign new ScriptableObject reference
+            // Note: This requires making the field public or adding a setter method
+            uiElement.OnSkinUI(); // Reapply the skin
+        }
+    }
+}
+```
+
+### Approach 3: Call OnSkinUI() After Changes
+
+After modifying ScriptableObject data or references, call `OnSkinUI()` on affected components:
+
+```csharp
+using UnityEngine;
+using ProgramadorCastellano.CentralisedUI;
+
+public class UIRefresher : MonoBehaviour
+{
+    public void RefreshAllUI()
+    {
+        // Find all CentralisedUIData components in the scene
+        CentralisedUIData[] allUIData = FindObjectsOfType<CentralisedUIData>();
+        
+        foreach (var uiData in allUIData)
+        {
+            uiData.OnSkinUI(); // Reapply skins to all elements
+        }
+    }
+}
+```
+
+<Tip>
+`OnSkinUI()` is a public method, so you can call it from any script whenever you need to refresh the UI appearance. This is useful after:
+- Loading player preferences
+- Unlocking new themes
+- Changing accessibility settings
+- Transitioning between game states
+</Tip>
+
+## Common Workflows
+
+<AccordionGroup>
+  <Accordion title="Setting up a new UI element">
+    <Steps>
+      <Step title="Add or create UI element">
+        Either add the `CentralisedUIData` component to an existing Selectable, or create a new UI element from `GameObject > UI > ProgramadorCastellano > CentralisedUI`.
+      </Step>
+      
+      <Step title="Select transition mode">
+        Choose the Transition Mode that matches your design (ColorTint, SpriteSwap, or Animation).
+      </Step>
+      
+      <Step title="Assign ScriptableObject">
+        Drag and drop the appropriate ScriptableObject into the matching field.
+      </Step>
+      
+      <Step title="Apply the skin">
+        Click "Apply Skin" to preview the changes, or just enter Play mode to see the automatic application.
+      </Step>
+    </Steps>
+  </Accordion>
+
+  <Accordion title="Updating an entire theme">
+    <Steps>
+      <Step title="Locate the ScriptableObject">
+        In the Project window, find the ScriptableObject used by your UI elements (e.g., `Button_Primary_ColorTint`).
+      </Step>
+      
+      <Step title="Modify the values">
+        Select the ScriptableObject and edit its values in the Inspector (change colors, sprites, or animation triggers).
+      </Step>
+      
+      <Step title="See instant updates">
+        All UI elements using this ScriptableObject will automatically reflect the changes when you:
+        - Click "Apply Skin" on each element, OR
+        - Enter Play mode (automatic application), OR
+        - Call `OnSkinUI()` programmatically
+      </Step>
+    </Steps>
+    
+    <Tip>
+    You can change the visual style of dozens of buttons instantly by editing a single ScriptableObject!
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Testing different skins quickly">
+    <Steps>
+      <Step title="Create multiple ScriptableObjects">
+        Create several different ColorTint/SpriteSwap/Animation ScriptableObjects with different visual styles.
+      </Step>
+      
+      <Step title="Swap references in Inspector">
+        Select your UI element, and in the CentralisedUIData component, try dragging different ScriptableObjects into the appropriate field.
+      </Step>
+      
+      <Step title="Click Apply Skin after each change">
+        Each time you change the ScriptableObject reference, click "Apply Skin" to preview the new look immediately.
+      </Step>
+    </Steps>
+    
+    This workflow makes it easy to experiment with different visual styles during development.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Skin doesn't apply when clicking the button">
+    **Possible causes:**
+    - No ScriptableObject assigned for the selected Transition Mode
+    - ScriptableObject reference is null
+    - Transition Mode is set to "None"
+    
+    **Solution:** Check that you've assigned a ScriptableObject that matches your Transition Mode, and that the mode is not set to "None".
+  </Accordion>
+
+  <Accordion title="Changes don't appear at runtime">
+    **Possible causes:**
+    - ScriptableObject was modified in Play mode (changes don't persist)
+    - Forgot to save the scene after applying the skin in editor
+    
+    **Solution:** Make sure to edit ScriptableObjects outside of Play mode, and save your scene after making changes.
+  </Accordion>
+
+  <Accordion title="Warning: Transition mode not implemented">
+    **Cause:** The selected Transition Mode doesn't have a corresponding action in the dictionary (source: `CentralisedUIData.cs:51-53`).
+    
+    **Solution:** This should only happen if you select "None" as the transition mode, which is expected behavior. If you see this with other modes, ensure your ScriptableObject is properly assigned.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Working with Prefabs" icon="cubes" href="/guides/prefabs">
+    Learn how to create reusable UI prefabs with centralized styling
+  </Card>
+  
+  <Card title="API Reference" icon="code" href="/api/centralised-ui-data">
+    Explore the full API documentation for scripting advanced skin management
+  </Card>
+</CardGroup>

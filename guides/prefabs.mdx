@@ -1,0 +1,351 @@
+---
+title: Working with Prefabs
+description: Create and use reusable UI prefabs with centralized styling
+---
+
+Prefabs are essential for maintaining consistency and speeding up UI development. When combined with the Centralised UI package, they become even more powerful, allowing you to create reusable UI elements that can be restyled globally.
+
+## Sample Prefabs
+
+The Centralised UI package includes a collection of sample prefabs that demonstrate best practices for using the `CentralisedUIData` component.
+
+### Importing Sample Prefabs
+
+<Steps>
+  <Step title="Open Package Manager">
+    In Unity, navigate to:
+    ```text
+    Window > Package Manager
+    ```
+  </Step>
+
+  <Step title="Select Centralised UI package">
+    In the Package Manager window:
+    1. Change the filter dropdown from "In Project" to "Unity Registry" or "My Registries"
+    2. Find and select **Centralised UI** in the packages list
+  </Step>
+
+  <Step title="Import the Prefabs sample">
+    In the package details:
+    1. Scroll down to the **Samples** section
+    2. Find **Prefabs** in the list
+    3. Click the **Import** button next to it
+  </Step>
+
+  <Step title="Locate the imported prefabs">
+    The prefabs will be imported to:
+    ```text
+    Assets/Samples/Centralised UI/1.0.0/Prefabs/
+    ```
+    
+    You'll find prefabs for all Unity selectable types:
+    - UIDataButton.prefab
+    - UIDataToggle.prefab
+    - UIDataSlider.prefab
+    - UIDataScrollbar.prefab
+    - UIDataScrollView.prefab
+    - UIDataDropdown.prefab
+    - UIDataInputField.prefab
+  </Step>
+</Steps>
+
+<Note>
+These sample prefabs come with the `CentralisedUIData` component already configured and default ScriptableObjects assigned. They serve as excellent starting points for building your own UI.
+</Note>
+
+## Available Prefab Types
+
+<CardGroup cols={2}>
+  <Card title="UIDataButton" icon="hand-pointer">
+    A standard button with TextMeshPro label and the CentralisedUIData component. Perfect for:
+    - Menu buttons
+    - Action buttons
+    - Confirmation dialogs
+  </Card>
+  
+  <Card title="UIDataToggle" icon="toggle-on">
+    A toggle switch with background and checkmark. Ideal for:
+    - Settings panels
+    - Option menus
+    - On/off switches
+  </Card>
+  
+  <Card title="UIDataSlider" icon="sliders">
+    A horizontal slider with background, fill, and handle. Great for:
+    - Volume controls
+    - Brightness settings
+    - Progress bars
+  </Card>
+  
+  <Card title="UIDataScrollbar" icon="bars">
+    A scrollbar with handle. Used in:
+    - Scroll views
+    - Content navigation
+    - Custom scroll implementations
+  </Card>
+  
+  <Card title="UIDataScrollView" icon="scroll">
+    A complete scroll view with viewport and scrollbars. Perfect for:
+    - Item lists
+    - Inventory displays
+    - Long content areas
+  </Card>
+  
+  <Card title="UIDataDropdown" icon="caret-down">
+    A dropdown menu with arrow, template, and scrollbar. Ideal for:
+    - Selection menus
+    - Option lists
+    - Category pickers
+  </Card>
+  
+  <Card title="UIDataInputField" icon="keyboard">
+    A text input field with TextMeshPro. Used for:
+    - Name entry
+    - Search boxes
+    - Form fields
+  </Card>
+</CardGroup>
+
+## Creating Your Own UI Prefabs
+
+Follow these best practices when creating custom UI prefabs with centralized styling.
+
+<Steps>
+  <Step title="Create the UI element">
+    Create your UI element using either method:
+    
+    **Option A**: Use the built-in menu
+    ```text
+    GameObject > UI > ProgramadorCastellano > CentralisedUI > [Element Type]
+    ```
+    
+    **Option B**: Start from a sample prefab
+    - Drag a sample prefab into your scene
+    - Modify it to match your needs
+  </Step>
+
+  <Step title="Configure the visual appearance">
+    Customize the UI element:
+    - Adjust RectTransform settings (size, anchors, position)
+    - Modify Image components (sprites, colors)
+    - Configure TextMeshPro components (font, size, text)
+    - Set up child objects if needed
+  </Step>
+
+  <Step title="Set up CentralisedUIData component">
+    Configure the centralized styling:
+    1. Choose the appropriate **Transition Mode**
+    2. Create or assign a ScriptableObject for the transition type
+    3. Click **Apply Skin** to verify the appearance
+  </Step>
+
+  <Step title="Create the prefab">
+    Save as a prefab:
+    1. Drag the GameObject from the Hierarchy into your Project window
+    2. Choose **Original Prefab** when prompted
+    3. Organize it in a Prefabs folder (e.g., `Assets/Prefabs/UI/`)
+  </Step>
+</Steps>
+
+<Tip>
+Create prefabs for each UI element type in your game (primary buttons, secondary buttons, warning buttons, etc.). This ensures consistency and makes it easy to spawn UI elements programmatically.
+</Tip>
+
+## Using Prefabs with ScriptableObjects
+
+The real power comes from combining prefabs with ScriptableObjects.
+
+### Scenario: Multiple Button Styles
+
+Imagine you need three button types: Primary, Secondary, and Warning.
+
+<Steps>
+  <Step title="Create ScriptableObjects for each style">
+    Create three ColorTint ScriptableObjects:
+    
+    **Button_Primary_ColorTint**:
+    - Normal: Blue (#007BFF)
+    - Highlighted: Light Blue (#0056B3)
+    - Pressed: Dark Blue (#004085)
+    
+    **Button_Secondary_ColorTint**:
+    - Normal: Gray (#6C757D)
+    - Highlighted: Light Gray (#5A6268)
+    - Pressed: Dark Gray (#545B62)
+    
+    **Button_Warning_ColorTint**:
+    - Normal: Red (#DC3545)
+    - Highlighted: Light Red (#C82333)
+    - Pressed: Dark Red (#BD2130)
+  </Step>
+
+  <Step title="Create three prefab variants">
+    Using the UIDataButton sample prefab:
+    
+    1. Create three instances in your scene
+    2. Assign the corresponding ScriptableObject to each:
+       - Primary Button → Button_Primary_ColorTint
+       - Secondary Button → Button_Secondary_ColorTint
+       - Warning Button → Button_Warning_ColorTint
+    3. Create prefabs from each configured instance
+  </Step>
+
+  <Step title="Use prefabs throughout your project">
+    Now you can:
+    - Drag these prefabs into any scene
+    - Instantiate them via script
+    - Ensure consistent styling across your entire game
+  </Step>
+
+  <Step title="Update themes globally">
+    To change all primary buttons at once:
+    1. Modify the Button_Primary_ColorTint ScriptableObject
+    2. Enter Play mode or call `OnSkinUI()` on instances
+    3. All primary buttons update instantly!
+  </Step>
+</Steps>
+
+## Prefab Variants for Better Organization
+
+Unity's prefab variant system works perfectly with Centralised UI.
+
+### Creating a Prefab Variant
+
+<Steps>
+  <Step title="Create a base prefab">
+    Create a generic button prefab with the CentralisedUIData component, but without any specific ScriptableObject assigned (or with a default one).
+  </Step>
+
+  <Step title="Create variants">
+    In the Project window:
+    1. Right-click on your base prefab
+    2. Select **Create > Prefab Variant**
+    3. Name it descriptively (e.g., "Button_Primary")
+  </Step>
+
+  <Step title="Configure each variant">
+    Open each variant and assign different ScriptableObjects:
+    - Button_Primary variant → Primary ColorTint SO
+    - Button_Secondary variant → Secondary ColorTint SO
+    - Button_Warning variant → Warning ColorTint SO
+  </Step>
+</Steps>
+
+<Note>
+Prefab variants inherit from the base prefab, so any changes to the base structure (like adding a glow effect child object) automatically propagate to all variants. Only the ScriptableObject references differ between variants.
+</Note>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Organize ScriptableObjects alongside prefabs">
+    Keep your project organized by storing related assets together:
+    
+    ```text
+    Assets/
+    ├── UI/
+    │   ├── Prefabs/
+    │   │   ├── Buttons/
+    │   │   │   ├── Button_Primary.prefab
+    │   │   │   ├── Button_Secondary.prefab
+    │   │   │   └── Button_Warning.prefab
+    │   │   └── Toggles/
+    │   ├── Themes/
+    │   │   ├── Primary/
+    │   │   │   ├── Button_Primary_ColorTint.asset
+    │   │   │   └── Toggle_Primary_ColorTint.asset
+    │   │   └── Secondary/
+    ```
+    
+    This makes it easy to find and update related assets.
+  </Accordion>
+
+  <Accordion title="Use prefabs for instantiated UI">
+    When creating UI elements at runtime (like inventory items, dialog boxes, or notification popups), use prefabs:
+    
+    ```csharp
+    using UnityEngine;
+    using ProgramadorCastellano.CentralisedUI;
+    
+    public class UISpawner : MonoBehaviour
+    {
+        [SerializeField] private GameObject buttonPrefab;
+        [SerializeField] private Transform buttonContainer;
+        
+        public void CreateButton(string label)
+        {
+            GameObject newButton = Instantiate(buttonPrefab, buttonContainer);
+            // The CentralisedUIData component automatically applies
+            // the skin during Awake(), so no manual setup needed!
+            newButton.GetComponentInChildren<TextMeshProUGUI>().text = label;
+        }
+    }
+    ```
+    
+    The prefab's assigned ScriptableObjects ensure consistency without extra code.
+  </Accordion>
+
+  <Accordion title="Test prefabs with different ScriptableObjects">
+    Before finalizing a prefab:
+    
+    1. Create instances with different ScriptableObjects assigned
+    2. Verify that transitions work correctly (hover, press, etc.)
+    3. Test in different UI contexts (overlays, world space, etc.)
+    4. Ensure the prefab hierarchy is flexible enough for variants
+    
+    This ensures your prefabs work well with the centralized styling system.
+  </Accordion>
+
+  <Accordion title="Document your prefab conventions">
+    Maintain a naming convention document for your team:
+    
+    - Prefab names: `[ElementType]_[Style]` (e.g., Button_Primary)
+    - ScriptableObject names: `[ElementType]_[Style]_[TransitionType]` (e.g., Button_Primary_ColorTint)
+    - Folder structure: Group by element type or by style theme
+    
+    Consistency helps teams work efficiently and reduces confusion.
+  </Accordion>
+</AccordionGroup>
+
+## Advanced: Nested Prefabs with Centralized Styling
+
+You can create complex UI prefabs where multiple child elements have `CentralisedUIData` components.
+
+### Example: Dialog Box Prefab
+
+Create a dialog box prefab containing:
+- Background panel (no CentralisedUIData, just visual)
+- Title text (TextMeshPro)
+- Message text (TextMeshPro)
+- Confirm button (with CentralisedUIData → Primary ColorTint)
+- Cancel button (with CentralisedUIData → Secondary ColorTint)
+
+When you instantiate this dialog:
+1. Both buttons automatically apply their skins during `Awake()`
+2. You can change all dialog buttons globally by updating the Primary/Secondary ColorTint ScriptableObjects
+3. The prefab remains flexible and easy to theme
+
+<Tip>
+Nested prefabs with multiple CentralisedUIData components allow you to build complex UI systems while maintaining global theme control. Each component independently applies its assigned ScriptableObject.
+</Tip>
+
+## Source Code References
+
+The sample prefabs are defined in:
+- Package manifest: `package.json:21-26` (defines the Samples~/Prefabs path)
+- Sample prefabs location: `Samples~/Prefabs/` directory
+- Prefab creation logic: `DefaultCentralisedUIDataItemsEditor.cs` (lines 31-169)
+
+All sample prefabs are created using the same logic as the `GameObject > UI > ProgramadorCastellano > CentralisedUI` menu items.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Creating ScriptableObjects" icon="file" href="/guides/creating-scriptable-objects">
+    Learn how to create custom ScriptableObjects for your prefabs
+  </Card>
+  
+  <Card title="API Reference" icon="code" href="/api/centralised-ui-data">
+    Explore scripting options for advanced prefab workflows
+  </Card>
+</CardGroup>

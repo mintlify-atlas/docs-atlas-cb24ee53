@@ -1,0 +1,156 @@
+---
+title: "Overview"
+description: "Understand the architecture and design philosophy behind Centralised UI"
+---
+
+## Architecture
+
+Centralised UI uses a component-based architecture that combines Unity's **Selectable** component with **ScriptableObjects** to achieve centralized UI styling management.
+
+<CardGroup cols={2}>
+  <Card title="CentralisedUIData Component" icon="cube">
+    MonoBehaviour attached to UI elements that applies styling from ScriptableObjects
+  </Card>
+  <Card title="ScriptableObject Assets" icon="database">
+    Reusable data containers that store transition settings (colors, sprites, animations)
+  </Card>
+</CardGroup>
+
+### System Components
+
+The package consists of two primary components:
+
+1. **CentralisedUIData.cs** - A MonoBehaviour component that:
+   - Requires a `Selectable` component (Button, Toggle, Slider, etc.)
+   - References ScriptableObject assets for each transition mode
+   - Applies the styling at runtime and in the editor
+
+2. **ScriptableObject Assets** - Three types of data containers:
+   - `CentralisedUIColorTintSO` - Stores ColorBlock data
+   - `CentralisedUISpriteSwapSO` - Stores SpriteState data
+   - `CentralisedUIAnimationSO` - Stores AnimationTriggers data
+
+## How It Works at Runtime
+
+The system initializes and applies styling through a simple three-step process:
+
+```csharp
+private void Awake()
+{
+    Initialize();
+    OnSkinUI();
+}
+```
+
+### Step 1: Initialize
+
+During initialization (CentralisedUIData.cs:30), the component:
+
+1. Gets the `Selectable` component reference
+2. Creates a dictionary mapping transition modes to actions
+
+```csharp
+private void Initialize()
+{
+    _selectable = GetComponent<Selectable>();
+
+    _transitionActions = new Dictionary<Selectable.Transition, UnityAction>()
+    {
+        { Selectable.Transition.ColorTint, () => _selectable.colors = _colorTintSO.Colors },
+        { Selectable.Transition.SpriteSwap, () => _selectable.spriteState = _spriteSwapSO.Sprites },
+        { Selectable.Transition.Animation, () => _selectable.animationTriggers = _animationSO.Animations }
+    };
+}
+```
+
+<Note>
+  The dictionary pattern (`_transitionActions`) provides a clean, extensible way to map each transition mode to its corresponding action. This eliminates the need for switch statements and makes the code more maintainable.
+</Note>
+
+### Step 2: Apply Styling
+
+The `OnSkinUI()` method (CentralisedUIData.cs:42) applies the appropriate styling:
+
+```csharp
+public void OnSkinUI()
+{
+    _selectable.transition = _transitionMode;
+    if (!_transitionActions.ContainsKey(_transitionMode)) {
+        Debug.LogWarning($"Transition mode '{_transitionMode}' not implemented");
+    }
+    else {
+        _transitionActions[_transitionMode]?.Invoke();
+    }
+}
+```
+
+This method:
+1. Sets the transition mode on the Selectable
+2. Looks up the appropriate action in the dictionary
+3. Invokes the action to apply the styling from the ScriptableObject
+
+## Key Design Decisions
+
+<Note>
+  **ScriptableObject Pattern**: By storing styling data in ScriptableObjects rather than directly on components, you can:
+  - Share the same styling across multiple UI elements
+  - Update all elements using a style by changing just one asset
+  - Organize and manage UI themes more effectively
+  - Reduce memory usage by referencing shared data
+</Note>
+
+<Note>
+  **Dictionary-Based Dispatch**: The `_transitionActions` dictionary provides O(1) lookup time and makes it easy to add new transition modes in the future without modifying the core logic.
+</Note>
+
+### The Centralization Benefit
+
+The power of this architecture becomes clear when you need to update your UI:
+
+<Steps>
+  <Step title="Traditional Approach">
+    Edit each Button, Toggle, and Slider individually in your scene
+  </Step>
+  <Step title="Centralised UI Approach">
+    Edit the ScriptableObject asset once - all UI elements update automatically
+  </Step>
+</Steps>
+
+## Data Flow
+
+```text
+┌─────────────────────────┐
+│  ScriptableObject       │
+│  (ColorTint/Sprite/     │
+│   Animation Data)       │
+└───────────┬─────────────┘
+            │
+            │ Referenced by
+            ▼
+┌─────────────────────────┐
+│  CentralisedUIData      │
+│  Component              │
+└───────────┬─────────────┘
+            │
+            │ Applies to
+            ▼
+┌─────────────────────────┐
+│  Selectable             │
+│  (Button/Toggle/etc)    │
+└─────────────────────────┘
+```
+
+<Info>
+  The `OnSkinUI()` method is also called from the custom editor, allowing you to preview styling changes in edit mode without entering play mode.
+</Info>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Transition Modes" icon="palette" href="/concepts/transition-modes">
+    Learn about the three transition modes and when to use each
+  </Card>
+  <Card title="ScriptableObjects" icon="file-code" href="/concepts/scriptable-objects">
+    Deep dive into the three ScriptableObject types and their properties
+  </Card>
+</CardGroup>

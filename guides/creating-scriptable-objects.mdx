@@ -1,0 +1,213 @@
+---
+title: Creating ScriptableObjects
+description: Create and configure ColorTint, SpriteSwap, and Animation ScriptableObjects for centralized UI styling
+---
+
+ScriptableObjects are the foundation of the Centralised UI system. They store the visual styling data that can be shared across multiple UI elements.
+
+## Overview
+
+The package provides three types of ScriptableObjects, each corresponding to Unity's Selectable transition modes:
+
+- **CentralisedUIColorTintSO**: Stores a `ColorBlock` for color-based transitions
+- **CentralisedUISpriteSwapSO**: Stores a `SpriteState` for sprite-based transitions
+- **CentralisedUIAnimationSO**: Stores `AnimationTriggers` for animation-based transitions
+
+## Creating ScriptableObjects
+
+<Steps>
+  <Step title="Right-click in Project window">
+    In the Project window, navigate to the folder where you want to create the ScriptableObject. Right-click in the folder or in an empty area.
+  </Step>
+
+  <Step title="Navigate to the creation menu">
+    From the context menu, select:
+    ```text
+    Create > ProgramadorCastellano > CentralisedUI
+    ```
+  </Step>
+
+  <Step title="Select the ScriptableObject type">
+    Choose one of the three available options:
+    
+    - **ColorTint**: Creates a `CentralisedUIColorTintSO` asset
+    - **SpriteSwap**: Creates a `CentralisedUISpriteSwapSO` asset
+    - **Animation**: Creates a `CentralisedUIAnimationSO` asset
+  </Step>
+
+  <Step title="Name your asset">
+    Give your ScriptableObject a descriptive name. The asset will be created in your selected folder.
+  </Step>
+</Steps>
+
+<Tip>
+Use a consistent naming convention for your ScriptableObjects to keep them organized. For example:
+- `Button_Primary_ColorTint`
+- `Toggle_Accent_ColorTint`
+- `Button_Primary_SpriteSwap`
+
+Grouping related assets in folders (e.g., `UI/Themes/Primary/` or `UI/Themes/Secondary/`) can also help maintain organization as your project grows.
+</Tip>
+
+## Configuring ColorTint ScriptableObjects
+
+The `CentralisedUIColorTintSO` stores a Unity `ColorBlock` structure that defines colors for different UI states.
+
+### Fields in ColorBlock
+
+When you select a ColorTint ScriptableObject, you'll see the following fields in the Inspector:
+
+- **Normal Color**: The color when the UI element is in its default state
+- **Highlighted Color**: The color when the mouse hovers over the element
+- **Pressed Color**: The color when the element is clicked/pressed
+- **Selected Color**: The color when the element is selected (used in navigation)
+- **Disabled Color**: The color when the element is disabled
+- **Color Multiplier**: Multiplies the final color (useful for brightness adjustments)
+- **Fade Duration**: How long the color transition takes in seconds
+
+### Example: Primary Button Colors
+
+```text
+Normal Color: #FFFFFF (White)
+Highlighted Color: #F5F5F5 (Light Gray)
+Pressed Color: #C8C8C8 (Medium Gray)
+Selected Color: #F5F5F5 (Light Gray)
+Disabled Color: #C8C8C878 (Transparent Gray)
+Color Multiplier: 1
+Fade Duration: 0.1
+```
+
+<Note>
+The ColorTint transition mode works by changing the color of the `Image` component on your Selectable. Make sure your UI element has an Image component attached.
+</Note>
+
+## Configuring SpriteSwap ScriptableObjects
+
+The `CentralisedUISpriteSwapSO` stores a Unity `SpriteState` structure that defines different sprites for UI states.
+
+### Fields in SpriteState
+
+When you select a SpriteSwap ScriptableObject, you'll see the following fields:
+
+- **Highlighted Sprite**: The sprite shown when the mouse hovers over the element
+- **Pressed Sprite**: The sprite shown when the element is clicked/pressed
+- **Selected Sprite**: The sprite shown when the element is selected (navigation)
+- **Disabled Sprite**: The sprite shown when the element is disabled
+
+<Warning>
+The SpriteState does not have a "Normal Sprite" field. The normal state uses the sprite already assigned to the Image component on your GameObject. Only assign sprites for the interaction states (highlighted, pressed, selected, disabled).
+</Warning>
+
+### Example: Toggle Switch Sprites
+
+```text
+Highlighted Sprite: ToggleSwitch_Hover
+Pressed Sprite: ToggleSwitch_Press
+Selected Sprite: None
+Disabled Sprite: ToggleSwitch_Disabled
+```
+
+<Tip>
+SpriteSwap is ideal for UI elements that need distinct visual states, like toggle switches with ON/OFF graphics or buttons with custom pressed states. For simple color changes, ColorTint is more performant.
+</Tip>
+
+## Configuring Animation ScriptableObjects
+
+The `CentralisedUIAnimationSO` stores Unity `AnimationTriggers` that can trigger Animator transitions.
+
+### Fields in AnimationTriggers
+
+When you select an Animation ScriptableObject, you'll see the following fields:
+
+- **Normal Trigger**: Animation trigger name for the normal state
+- **Highlighted Trigger**: Animation trigger name when hovering
+- **Pressed Trigger**: Animation trigger name when clicked/pressed
+- **Selected Trigger**: Animation trigger name when selected
+- **Disabled Trigger**: Animation trigger name when disabled
+
+### Example: Animated Button
+
+```text
+Normal Trigger: Normal
+Highlighted Trigger: Highlighted
+Pressed Trigger: Pressed
+Selected Trigger: Selected
+Disabled Trigger: Disabled
+```
+
+<Note>
+For Animation transitions to work, your GameObject must have an `Animator` component with an Animator Controller that defines the corresponding trigger parameters. The trigger names in the ScriptableObject must match the parameter names in your Animator Controller.
+</Note>
+
+## Common Use Cases
+
+<AccordionGroup>
+  <Accordion title="Primary Button Theme">
+    **ColorTint Approach:**
+    
+    Create a `Button_Primary_ColorTint` ScriptableObject:
+    - Normal: Your brand primary color (e.g., #007BFF)
+    - Highlighted: Slightly lighter (e.g., #0056B3)
+    - Pressed: Darker shade (e.g., #004085)
+    - Disabled: Desaturated version (e.g., #6C757D)
+    
+    This single ScriptableObject can be assigned to all primary buttons in your game, creating instant consistency.
+  </Accordion>
+
+  <Accordion title="Toggle On/Off States">
+    **SpriteSwap Approach:**
+    
+    Create a `Toggle_Switch_SpriteSwap` ScriptableObject:
+    - Normal sprite on Image component: Switch in OFF position
+    - Highlighted Sprite: Switch with glow/highlight effect
+    - Pressed Sprite: Switch in ON position
+    - Selected Sprite: Switch in ON position with selection outline
+    
+    When users click the toggle, the sprite swaps to show the state change clearly.
+  </Accordion>
+
+  <Accordion title="Animated Menu Button">
+    **Animation Approach:**
+    
+    Create a `Button_Menu_Animation` ScriptableObject:
+    - Normal Trigger: "Idle"
+    - Highlighted Trigger: "Hover" (scale up, glow)
+    - Pressed Trigger: "Click" (bounce animation)
+    - Selected Trigger: "Selected" (persistent highlight)
+    
+    Pair this with an Animator Controller containing these triggers and animation clips for smooth, animated button feedback.
+  </Accordion>
+</AccordionGroup>
+
+## Reusing ScriptableObjects
+
+The power of ScriptableObjects comes from reusability:
+
+1. **Create once**: Make a ScriptableObject for each visual style you need
+2. **Assign to multiple elements**: Drag the same ScriptableObject onto multiple CentralisedUIData components
+3. **Update in one place**: When you modify the ScriptableObject, all UI elements using it automatically update
+
+<Tip>
+You can assign the same ScriptableObject to dozens or hundreds of UI elements. When you want to change your game's theme or color scheme, just update a few ScriptableObjects instead of manually updating every UI element!
+</Tip>
+
+## Source Code References
+
+The ScriptableObject classes are defined in:
+- `CentralisedUIColorTintSO.cs` (Runtime/ScriptableObjects/CentralisedUIColorTintSO.cs:6-11)
+- `CentralisedUISpriteSwapSO.cs` (Runtime/ScriptableObjects/CentralisedUISpriteSwapSO.cs:6-11)
+- `CentralisedUIAnimationSO.cs` (Runtime/ScriptableObjects/CentralisedUIAnimationSO.cs:6-11)
+
+Each uses Unity's `[CreateAssetMenu]` attribute to appear in the Create menu.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Applying Skins" icon="paint-brush" href="/guides/applying-skins">
+    Learn how to apply your ScriptableObjects to UI elements and update them at runtime
+  </Card>
+  
+  <Card title="Working with Prefabs" icon="cubes" href="/guides/prefabs">
+    Create reusable UI prefabs with centralized styling
+  </Card>
+</CardGroup>

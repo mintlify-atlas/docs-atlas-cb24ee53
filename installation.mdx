@@ -1,0 +1,175 @@
+---
+title: Installation
+description: Install Centralised UI in your Unity project via Package Manager or manual import
+---
+
+## Requirements
+
+Before installing Centralised UI, ensure your project meets these requirements:
+
+- **Unity Version**: 2022.3 or higher
+- **Dependencies**: TextMeshPro 3.0.6 (automatically installed as a dependency)
+
+<Note>
+The package is tested on Unity 2022.3.11f1. While it should work on newer versions, we recommend using Unity 2022.3 or later for best compatibility.
+</Note>
+
+## Installation Methods
+
+You can install Centralised UI using one of two methods:
+
+### Method 1: Install via Git URL (Recommended)
+
+<Steps>
+  <Step title="Open Unity Package Manager">
+    In Unity, navigate to **Window > Package Manager** to open the Package Manager window.
+  </Step>
+
+  <Step title="Add package from Git URL">
+    Click the **+** button in the top-left corner of the Package Manager window and select **Add package from git URL...**
+    
+    <Info>
+    This option allows you to install packages directly from a Git repository.
+    </Info>
+  </Step>
+
+  <Step title="Enter the repository URL">
+    Paste the following Git URL into the text field:
+    
+    ```text
+    https://github.com/Sadrmm/CentralisedUI.git
+    ```
+    
+    Press **Add** or hit Enter to start the installation.
+  </Step>
+
+  <Step title="Wait for installation to complete">
+    Unity will download and import the package. This may take a few moments depending on your internet connection. The package and its dependencies (TextMeshPro) will be automatically installed.
+  </Step>
+</Steps>
+
+### Method 2: Manual Installation
+
+If you prefer to download the package manually or need an offline installation:
+
+<Steps>
+  <Step title="Download the repository">
+    Go to the [Centralised UI GitHub repository](https://github.com/Sadrmm/CentralisedUI) and download the source code as a ZIP file (Code > Download ZIP).
+  </Step>
+
+  <Step title="Extract the package">
+    Extract the ZIP file to a temporary location on your computer.
+  </Step>
+
+  <Step title="Copy to Unity project">
+    Copy the extracted folder into your Unity project's `Assets` directory. You can place it anywhere within Assets, such as `Assets/CentralisedUI` or `Assets/Plugins/CentralisedUI`.
+  </Step>
+
+  <Step title="Wait for Unity to import">
+    Unity will automatically detect and import the new assets. Check the Console window for any import errors.
+    
+    <Warning>
+    With manual installation, you'll need to ensure TextMeshPro 3.0.6 is already installed in your project, as dependencies won't be automatically resolved.
+    </Warning>
+  </Step>
+</Steps>
+
+## Verify Installation
+
+After installation, verify that Centralised UI is correctly installed:
+
+<Steps>
+  <Step title="Check Package Manager">
+    Open **Window > Package Manager** and look for **Centralised UI** in the package list. It should appear under "Packages - Custom" (for Git installation) or in your project packages.
+    
+    The package details should show:
+    - **Name**: Centralised UI
+    - **Version**: 1.0.0
+    - **Description**: A small add-on that will allow you to modify the colours, images or animations of your selectable UI elements in a centralised way.
+  </Step>
+
+  <Step title="Test ScriptableObject creation">
+    In the Project window, right-click in any folder and navigate to:
+    
+    **Create > ProgramadorCastellano > CentralisedUI**
+    
+    You should see three options:
+    - ColorTint
+    - SpriteSwap
+    - Animation
+    
+    If these menu items appear, the package is correctly installed.
+    
+    <Tip>
+    You can cancel this test creation without creating any assets.
+    </Tip>
+  </Step>
+
+  <Step title="Check UI GameObject menu">
+    In the Hierarchy window, right-click and navigate to:
+    
+    **UI > ProgramadorCastellano > CentralisedUI**
+    
+    You should see options to create UI elements (Button, Toggle, Slider, etc.) with the `CentralisedUIData` component pre-attached.
+  </Step>
+</Steps>
+
+## Import Sample Prefabs (Optional)
+
+Centralised UI includes sample prefabs for all Unity selectables with the component already implemented:
+
+<Steps>
+  <Step title="Open Package Manager">
+    Navigate to **Window > Package Manager** and find **Centralised UI** in the package list.
+  </Step>
+
+  <Step title="Import Samples">
+    In the package details pane, look for the **Samples** section. You should see:
+    
+    - **Prefabs**: Contains a prefab for each Unity selectable with the component already implemented.
+    
+    Click **Import** next to the Prefabs sample to add them to your project.
+  </Step>
+
+  <Step title="Locate imported prefabs">
+    After import, the prefabs will be available in your project at:
+    
+    `Assets/Samples/Centralised UI/1.0.0/Prefabs`
+    
+    You can use these as templates or reference implementations.
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+<Accordion title="TextMeshPro dependency error">
+  If you see errors about missing TextMeshPro references, ensure TextMeshPro 3.0.6 or higher is installed:
+  
+  1. Open **Window > Package Manager**
+  2. Switch to **Unity Registry** packages
+  3. Find **TextMeshPro** and click **Install**
+  
+  For Git URL installations, this should happen automatically.
+</Accordion>
+
+<Accordion title="Git URL installation fails">
+  If the Git URL installation fails:
+  
+  - Ensure you have Git installed on your system (Unity requires Git for Git URL packages)
+  - Check your firewall/proxy settings aren't blocking GitHub
+  - Try the manual installation method instead
+</Accordion>
+
+<Accordion title="Package doesn't appear in Package Manager">
+  If using manual installation and the package doesn't appear:
+  
+  - Ensure you copied the package to the `Assets` folder, not the `Packages` folder
+  - Check the Console for import errors
+  - Verify that `package.json` is present in the copied folder
+</Accordion>
+
+## Next Steps
+
+<Card title="Quickstart Guide" icon="rocket" href="/quickstart">
+  Learn how to create your first styled UI element in under 5 minutes
+</Card>

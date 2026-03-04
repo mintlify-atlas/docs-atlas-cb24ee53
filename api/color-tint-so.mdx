@@ -1,0 +1,167 @@
+---
+title: 'CentralisedUIColorTintSO'
+description: 'ScriptableObject for storing centralized color tint configurations'
+---
+
+## Overview
+
+`CentralisedUIColorTintSO` is a ScriptableObject that stores color configurations for Unity UI Selectable components using the ColorTint transition mode. It encapsulates a `ColorBlock` structure containing colors for all UI states.
+
+## Class Declaration
+
+```csharp
+namespace ProgramadorCastellano.CentralisedUI
+{
+    [CreateAssetMenu(menuName = "ProgramadorCastellano/CentralisedUI/ColorTint", order = 1)]
+    public class CentralisedUIColorTintSO : ScriptableObject
+    {
+        [SerializeField] ColorBlock _colors = ColorBlock.defaultColorBlock;
+        public ColorBlock Colors => _colors;
+    }
+}
+```
+
+## Creating Assets
+
+You can create a new ColorTint ScriptableObject through Unity's Create menu:
+
+**Menu Path**: `Assets > Create > ProgramadorCastellano > CentralisedUI > ColorTint`
+
+<Note>
+The asset appears at order position 1 in the menu, making it the first option in the CentralisedUI submenu.
+</Note>
+
+## Properties
+
+<ParamField path="Colors" type="ColorBlock" readOnly>
+  Gets the ColorBlock containing all color configurations for different UI states. This is a read-only property that exposes the internal `_colors` field.
+</ParamField>
+
+## ColorBlock Structure
+
+The `ColorBlock` is a Unity structure (`UnityEngine.UI.ColorBlock`) that contains the following properties:
+
+<ResponseField name="normalColor" type="Color">
+  The color of the UI element in its normal state.
+</ResponseField>
+
+<ResponseField name="highlightedColor" type="Color">
+  The color when the UI element is highlighted (hovered).
+</ResponseField>
+
+<ResponseField name="pressedColor" type="Color">
+  The color when the UI element is pressed.
+</ResponseField>
+
+<ResponseField name="selectedColor" type="Color">
+  The color when the UI element is selected.
+</ResponseField>
+
+<ResponseField name="disabledColor" type="Color">
+  The color when the UI element is disabled.
+</ResponseField>
+
+<ResponseField name="colorMultiplier" type="float" default="1.0">
+  Multiplier applied to all colors. Values greater than 1 will brighten the colors.
+</ResponseField>
+
+<ResponseField name="fadeDuration" type="float" default="0.1">
+  Duration (in seconds) for color transitions between states.
+</ResponseField>
+
+## Usage Example
+
+### Creating and Configuring
+
+```csharp
+// This ScriptableObject is typically created via the Unity Editor:
+// 1. Right-click in Project window
+// 2. Create > ProgramadorCastellano > CentralisedUI > ColorTint
+// 3. Configure the ColorBlock in the Inspector
+```
+
+### Using in Code
+
+```csharp
+using UnityEngine;
+using UnityEngine.UI;
+using ProgramadorCastellano.CentralisedUI;
+
+public class UIColorExample : MonoBehaviour
+{
+    [SerializeField] private CentralisedUIColorTintSO colorTintSO;
+    [SerializeField] private Button button;
+
+    void Start()
+    {
+        // Apply the color configuration to a button
+        button.colors = colorTintSO.Colors;
+    }
+}
+```
+
+### Integration with CentralisedUIData
+
+```csharp
+// The CentralisedUIData component automatically uses this ScriptableObject
+// when the transition mode is set to ColorTint:
+
+// In CentralisedUIData.Initialize():
+_transitionActions = new Dictionary<Selectable.Transition, UnityAction>()
+{
+    { Selectable.Transition.ColorTint, () => _selectable.colors = _colorTintSO.Colors },
+    // ...
+};
+```
+
+## Configuration Tips
+
+<Accordion title="Color Design Best Practices">
+- **Normal Color**: Should be your base/default state color
+- **Highlighted Color**: Typically 10-20% brighter or a complementary shade
+- **Pressed Color**: Usually darker or more saturated than highlighted
+- **Selected Color**: Distinct from other states, often using accent colors
+- **Disabled Color**: Use desaturated or grayed-out versions (e.g., 50% opacity)
+- **Fade Duration**: 0.1-0.2s for snappy feel, 0.3-0.5s for smooth transitions
+</Accordion>
+
+<Note>
+The default value `ColorBlock.defaultColorBlock` provides Unity's standard color scheme:
+- Normal: White
+- Highlighted: Light gray (245, 245, 245)
+- Pressed: Medium gray (200, 200, 200)
+- Selected: Light gray (245, 245, 245)
+- Disabled: White with 50% alpha
+- Multiplier: 1.0
+- Fade Duration: 0.1s
+</Note>
+
+## Complete Source Code
+
+```csharp
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace ProgramadorCastellano.CentralisedUI
+{
+    [CreateAssetMenu(menuName = "ProgramadorCastellano/CentralisedUI/ColorTint", order = 1)]
+    public class CentralisedUIColorTintSO : ScriptableObject
+    {
+        [SerializeField] ColorBlock _colors = ColorBlock.defaultColorBlock;
+        public ColorBlock Colors => _colors;
+    }
+}
+```
+
+## Assembly Information
+
+- **Namespace**: `ProgramadorCastellano.CentralisedUI`
+- **Assembly**: ProgramadorCastellano.CentralisedUI.Runtime
+- **Inherits from**: `ScriptableObject`
+- **Unity Version**: Compatible with Unity 2019.4+
+
+## See Also
+
+- [CentralisedUIData](/api/centralised-ui-data) - Component that uses this ScriptableObject
+- [CentralisedUISpriteSwapSO](/api/sprite-swap-so) - Alternative transition mode using sprites
+- [CentralisedUIAnimationSO](/api/animation-so) - Alternative transition mode using animations

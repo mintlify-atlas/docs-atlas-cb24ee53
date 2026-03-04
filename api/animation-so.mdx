@@ -1,0 +1,204 @@
+---
+title: 'CentralisedUIAnimationSO'
+description: 'ScriptableObject for storing centralized animation trigger configurations'
+---
+
+## Overview
+
+`CentralisedUIAnimationSO` is a ScriptableObject that stores animation trigger configurations for Unity UI Selectable components using the Animation transition mode. It encapsulates an `AnimationTriggers` structure containing trigger names for all UI states.
+
+## Class Declaration
+
+```csharp
+namespace ProgramadorCastellano.CentralisedUI
+{
+    [CreateAssetMenu(menuName = "ProgramadorCastellano/CentralisedUI/Animation", order = 3)]
+    public class CentralisedUIAnimationSO : ScriptableObject
+    {
+        [SerializeField] AnimationTriggers _animations;
+        public AnimationTriggers Animations => _animations;
+    }
+}
+```
+
+## Creating Assets
+
+You can create a new Animation ScriptableObject through Unity's Create menu:
+
+**Menu Path**: `Assets > Create > ProgramadorCastellano > CentralisedUI > Animation`
+
+<Note>
+The asset appears at order position 3 in the menu, after ColorTint and SpriteSwap.
+</Note>
+
+## Properties
+
+<ParamField path="Animations" type="AnimationTriggers" readOnly>
+  Gets the AnimationTriggers containing all animation trigger names for different UI states. This is a read-only property that exposes the internal `_animations` field.
+</ParamField>
+
+## AnimationTriggers Structure
+
+The `AnimationTriggers` is a Unity structure (`UnityEngine.UI.AnimationTriggers`) that contains the following properties:
+
+<ResponseField name="normalTrigger" type="string" default="Normal">
+  The animation trigger name to activate when the UI element returns to its normal state.
+</ResponseField>
+
+<ResponseField name="highlightedTrigger" type="string" default="Highlighted">
+  The animation trigger name to activate when the UI element is highlighted (hovered).
+</ResponseField>
+
+<ResponseField name="pressedTrigger" type="string" default="Pressed">
+  The animation trigger name to activate when the UI element is pressed.
+</ResponseField>
+
+<ResponseField name="selectedTrigger" type="string" default="Selected">
+  The animation trigger name to activate when the UI element is selected.
+</ResponseField>
+
+<ResponseField name="disabledTrigger" type="string" default="Disabled">
+  The animation trigger name to activate when the UI element is disabled.
+</ResponseField>
+
+<Note>
+These trigger names must match the trigger parameters defined in the Animator Controller attached to the UI element.
+</Note>
+
+## Usage Example
+
+### Creating and Configuring
+
+```csharp
+// This ScriptableObject is typically created via the Unity Editor:
+// 1. Right-click in Project window
+// 2. Create > ProgramadorCastellano > CentralisedUI > Animation
+// 3. Configure the trigger names in the Inspector
+// 4. Ensure your Animator Controller has matching trigger parameters
+```
+
+### Using in Code
+
+```csharp
+using UnityEngine;
+using UnityEngine.UI;
+using ProgramadorCastellano.CentralisedUI;
+
+public class UIAnimationExample : MonoBehaviour
+{
+    [SerializeField] private CentralisedUIAnimationSO animationSO;
+    [SerializeField] private Button button;
+
+    void Start()
+    {
+        // Apply the animation configuration to a button
+        button.transition = Selectable.Transition.Animation;
+        button.animationTriggers = animationSO.Animations;
+    }
+}
+```
+
+### Integration with CentralisedUIData
+
+```csharp
+// The CentralisedUIData component automatically uses this ScriptableObject
+// when the transition mode is set to Animation:
+
+// In CentralisedUIData.Initialize():
+_transitionActions = new Dictionary<Selectable.Transition, UnityAction>()
+{
+    { Selectable.Transition.Animation, () => _selectable.animationTriggers = _animationSO.Animations },
+    // ...
+};
+```
+
+## Configuration Tips
+
+<Accordion title="Animation Setup Workflow">
+1. **Create Animator Controller**: Create an Animator Controller for your UI element
+2. **Add Trigger Parameters**: Add trigger parameters matching your trigger names (e.g., "Normal", "Highlighted", "Pressed")
+3. **Create Animation States**: Create animation states for each UI state
+4. **Set Up Transitions**: Create transitions between states triggered by the parameters
+5. **Configure ScriptableObject**: Set the trigger names in the CentralisedUIAnimationSO to match your parameters
+6. **Attach Animator**: Add an Animator component to your UI element with the Animator Controller
+</Accordion>
+
+<Accordion title="Animation Design Best Practices">
+- **Keep animations short**: UI feedback should be snappy (0.1-0.3s)
+- **Use scale/rotation sparingly**: Excessive movement can be distracting
+- **Consider performance**: Animator overhead can add up with many UI elements
+- **Test on target hardware**: Ensure animations run smoothly on minimum spec devices
+- **Provide clear feedback**: Animation should clearly indicate the state change
+</Accordion>
+
+<Accordion title="When to Use Animation vs Other Modes">
+**Use Animation when:**
+- You need complex, multi-property transitions
+- You want scale, rotation, or position changes
+- You're creating premium/polished UI experiences
+- You need frame-by-frame control over transitions
+
+**Avoid Animation when:**
+- Simple color/sprite changes are sufficient
+- Performance is critical (mobile devices)
+- You have many UI elements updating frequently
+- You want to minimize setup complexity
+</Accordion>
+
+## Requirements
+
+<Note>
+For Animation transitions to work properly:
+1. The UI element must have an `Animator` component attached
+2. The Animator must have a valid Animator Controller assigned
+3. The Animator Controller must have trigger parameters matching the trigger names in AnimationTriggers
+4. Each trigger should transition to an appropriate animation state
+</Note>
+
+## Example Animator Controller Setup
+
+```csharp
+// Animator Controller parameters:
+// - Normal (Trigger)
+// - Highlighted (Trigger)
+// - Pressed (Trigger)
+// - Selected (Trigger)
+// - Disabled (Trigger)
+
+// State transitions:
+// Any State -> Normal State (Trigger: Normal)
+// Any State -> Highlighted State (Trigger: Highlighted)
+// Any State -> Pressed State (Trigger: Pressed)
+// Any State -> Selected State (Trigger: Selected)
+// Any State -> Disabled State (Trigger: Disabled)
+```
+
+## Complete Source Code
+
+```csharp
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace ProgramadorCastellano.CentralisedUI
+{
+    [CreateAssetMenu(menuName = "ProgramadorCastellano/CentralisedUI/Animation", order = 3)]
+    public class CentralisedUIAnimationSO : ScriptableObject
+    {
+        [SerializeField] AnimationTriggers _animations;
+        public AnimationTriggers Animations => _animations;
+    }
+}
+```
+
+## Assembly Information
+
+- **Namespace**: `ProgramadorCastellano.CentralisedUI`
+- **Assembly**: ProgramadorCastellano.CentralisedUI.Runtime
+- **Inherits from**: `ScriptableObject`
+- **Unity Version**: Compatible with Unity 2019.4+
+
+## See Also
+
+- [CentralisedUIData](/api/centralised-ui-data) - Component that uses this ScriptableObject
+- [CentralisedUIColorTintSO](/api/color-tint-so) - Alternative transition mode using colors
+- [CentralisedUISpriteSwapSO](/api/sprite-swap-so) - Alternative transition mode using sprites

@@ -1,0 +1,169 @@
+---
+title: 'CentralisedUISpriteSwapSO'
+description: 'ScriptableObject for storing centralized sprite swap configurations'
+---
+
+## Overview
+
+`CentralisedUISpriteSwapSO` is a ScriptableObject that stores sprite configurations for Unity UI Selectable components using the SpriteSwap transition mode. It encapsulates a `SpriteState` structure containing sprites for different UI states.
+
+## Class Declaration
+
+```csharp
+namespace ProgramadorCastellano.CentralisedUI
+{
+    [CreateAssetMenu(menuName = "ProgramadorCastellano/CentralisedUI/SpriteSwap", order = 2)]
+    public class CentralisedUISpriteSwapSO : ScriptableObject
+    {
+        [SerializeField] SpriteState _sprites;
+        public SpriteState Sprites => _sprites;
+    }
+}
+```
+
+## Creating Assets
+
+You can create a new SpriteSwap ScriptableObject through Unity's Create menu:
+
+**Menu Path**: `Assets > Create > ProgramadorCastellano > CentralisedUI > SpriteSwap`
+
+<Note>
+The asset appears at order position 2 in the menu, directly after ColorTint.
+</Note>
+
+## Properties
+
+<ParamField path="Sprites" type="SpriteState" readOnly>
+  Gets the SpriteState containing all sprite configurations for different UI states. This is a read-only property that exposes the internal `_sprites` field.
+</ParamField>
+
+## SpriteState Structure
+
+The `SpriteState` is a Unity structure (`UnityEngine.UI.SpriteState`) that contains the following properties:
+
+<ResponseField name="highlightedSprite" type="Sprite">
+  The sprite to use when the UI element is highlighted (hovered).
+</ResponseField>
+
+<ResponseField name="pressedSprite" type="Sprite">
+  The sprite to use when the UI element is pressed.
+</ResponseField>
+
+<ResponseField name="selectedSprite" type="Sprite">
+  The sprite to use when the UI element is selected.
+</ResponseField>
+
+<ResponseField name="disabledSprite" type="Sprite">
+  The sprite to use when the UI element is disabled.
+</ResponseField>
+
+<Note>
+Unlike ColorBlock, SpriteState does not include a "normal" sprite. The normal state uses the sprite assigned to the Image component's `sprite` property.
+</Note>
+
+## Usage Example
+
+### Creating and Configuring
+
+```csharp
+// This ScriptableObject is typically created via the Unity Editor:
+// 1. Right-click in Project window
+// 2. Create > ProgramadorCastellano > CentralisedUI > SpriteSwap
+// 3. Configure the SpriteState in the Inspector by assigning sprites
+```
+
+### Using in Code
+
+```csharp
+using UnityEngine;
+using UnityEngine.UI;
+using ProgramadorCastellano.CentralisedUI;
+
+public class UISpriteExample : MonoBehaviour
+{
+    [SerializeField] private CentralisedUISpriteSwapSO spriteSwapSO;
+    [SerializeField] private Button button;
+
+    void Start()
+    {
+        // Apply the sprite configuration to a button
+        button.transition = Selectable.Transition.SpriteSwap;
+        button.spriteState = spriteSwapSO.Sprites;
+    }
+}
+```
+
+### Integration with CentralisedUIData
+
+```csharp
+// The CentralisedUIData component automatically uses this ScriptableObject
+// when the transition mode is set to SpriteSwap:
+
+// In CentralisedUIData.Initialize():
+_transitionActions = new Dictionary<Selectable.Transition, UnityAction>()
+{
+    { Selectable.Transition.SpriteSwap, () => _selectable.spriteState = _spriteSwapSO.Sprites },
+    // ...
+};
+```
+
+## Configuration Tips
+
+<Accordion title="Sprite Design Best Practices">
+- **Normal Sprite**: Set directly on the Image component, not in SpriteState
+- **Highlighted Sprite**: Should provide clear visual feedback (e.g., border glow, slight scale)
+- **Pressed Sprite**: Often appears "pushed in" or darker than highlighted
+- **Selected Sprite**: Should be distinct to show the element is currently selected
+- **Disabled Sprite**: Typically grayed out or with reduced opacity
+- **Consistency**: Ensure all sprites have the same dimensions and pivot points for smooth transitions
+</Accordion>
+
+<Accordion title="When to Use SpriteSwap vs ColorTint">
+**Use SpriteSwap when:**
+- You need completely different visual designs for each state
+- You want to show different icons or graphics per state
+- Color alone isn't sufficient to convey state changes
+- You're working with complex button designs
+
+**Use ColorTint when:**
+- Simple color changes are sufficient
+- You want to minimize asset overhead
+- You need smooth color transitions
+- Performance is a concern (fewer texture swaps)
+</Accordion>
+
+## Requirements
+
+<Note>
+For SpriteSwap to work properly, the Selectable component must have an `Image` component with a valid source sprite assigned. The sprites in the SpriteState will override this source sprite based on the UI state.
+</Note>
+
+## Complete Source Code
+
+```csharp
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace ProgramadorCastellano.CentralisedUI
+{
+    [CreateAssetMenu(menuName = "ProgramadorCastellano/CentralisedUI/SpriteSwap", order = 2)]
+    public class CentralisedUISpriteSwapSO : ScriptableObject
+    {
+        [SerializeField] SpriteState _sprites;
+        public SpriteState Sprites => _sprites;
+    }
+}
+```
+
+## Assembly Information
+
+- **Namespace**: `ProgramadorCastellano.CentralisedUI`
+- **Assembly**: ProgramadorCastellano.CentralisedUI.Runtime
+- **Inherits from**: `ScriptableObject`
+- **Unity Version**: Compatible with Unity 2019.4+
+
+## See Also
+
+- [CentralisedUIData](/api/centralised-ui-data) - Component that uses this ScriptableObject
+- [CentralisedUIColorTintSO](/api/color-tint-so) - Alternative transition mode using colors
+- [CentralisedUIAnimationSO](/api/animation-so) - Alternative transition mode using animations

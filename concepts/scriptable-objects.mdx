@@ -1,0 +1,372 @@
+---
+title: "ScriptableObjects"
+description: "Deep dive into the three ScriptableObject types and how they enable centralized UI management"
+---
+
+## What Are ScriptableObjects?
+
+ScriptableObjects are Unity's data container assets. Unlike MonoBehaviours that must be attached to GameObjects, ScriptableObjects exist as standalone assets in your project.
+
+<Info>
+  ScriptableObjects are perfect for data that should be:
+  - Shared across multiple scenes
+  - Reused by multiple components
+  - Edited independently from scene objects
+  - Version controlled as separate files
+</Info>
+
+### Key Benefits
+
+- **Memory Efficient**: Multiple references to the same SO share one instance in memory
+- **Persistent**: Changes save to the asset file, not to scenes
+- **Reusable**: One asset can be used by unlimited GameObjects
+- **Organized**: Easy to manage in dedicated folders
+
+## Why Centralised UI Uses ScriptableObjects
+
+The package uses ScriptableObjects to achieve true centralization of UI styling:
+
+<CardGroup cols={2}>
+  <Card title="Reusability" icon="recycle">
+    One ColorTint asset can style hundreds of buttons across multiple scenes
+  </Card>
+  <Card title="Centralization" icon="bullseye">
+    Change the asset once, all UI elements update automatically
+  </Card>
+  <Card title="Data Separation" icon="layer-group">
+    Styling data lives separately from scene hierarchy and component logic
+  </Card>
+  <Card title="Theme Management" icon="palette">
+    Create multiple theme sets by swapping ScriptableObject references
+  </Card>
+</CardGroup>
+
+<Note>
+  **Design Pattern**: This implements the **Data-Oriented Design** principle, separating data (ScriptableObjects) from behavior (CentralisedUIData component).
+</Note>
+
+## The Three ScriptableObject Types
+
+Centralised UI provides three ScriptableObject types, one for each transition mode supported by Unity's Selectable component.
+
+<AccordionGroup>
+  <Accordion title="CentralisedUIColorTintSO" icon="droplet">
+    ### CentralisedUIColorTintSO
+
+    Stores color transition data for the Color Tint transition mode.
+
+    #### Class Structure
+
+    ```csharp
+    using UnityEngine;
+    using UnityEngine.UI;
+
+    namespace ProgramadorCastellano.CentralisedUI
+    {
+        [CreateAssetMenu(menuName = "ProgramadorCastellano/CentralisedUI/ColorTint", order = 1)]
+        public class CentralisedUIColorTintSO : ScriptableObject
+        {
+            [SerializeField] ColorBlock _colors = ColorBlock.defaultColorBlock;
+            public ColorBlock Colors => _colors;
+        }
+    }
+    ```
+
+    #### Properties
+
+    | Property | Type | Description |
+    |----------|------|-------------|
+    | `_colors` | `ColorBlock` | Serialized field containing all color states |
+    | `Colors` | `ColorBlock` | Public getter for read-only access |
+
+    #### ColorBlock Contents
+
+    The `ColorBlock` struct contains:
+    - `normalColor` - Base color
+    - `highlightedColor` - Mouse hover color
+    - `pressedColor` - Click/touch color
+    - `selectedColor` - Selected state color
+    - `disabledColor` - Disabled state color
+    - `colorMultiplier` - Multiplies all colors (default: 1)
+    - `fadeDuration` - Transition speed in seconds (default: 0.1)
+
+    #### Creation
+
+    **Menu Path**: `Assets > Create > ProgramadorCastellano/CentralisedUI/ColorTint`
+
+    <Tip>
+      The `ColorBlock.defaultColorBlock` initialization ensures new assets start with Unity's default color values, making them immediately usable.
+    </Tip>
+
+    #### Usage Example
+
+    ```csharp
+    // This happens automatically in CentralisedUIData.cs:36
+    _selectable.colors = _colorTintSO.Colors;
+    ```
+
+    #### Best Practices
+
+    - Name assets descriptively: `ColorTint_PrimaryButton`, `ColorTint_DangerButton`
+    - Keep fade duration consistent across related elements (0.1-0.2s is typical)
+    - Use color multiplier sparingly - it affects all states
+    - Create variations for different contexts (menu, HUD, dialog)
+  </Accordion>
+
+  <Accordion title="CentralisedUISpriteSwapSO" icon="image">
+    ### CentralisedUISpriteSwapSO
+
+    Stores sprite references for the Sprite Swap transition mode.
+
+    #### Class Structure
+
+    ```csharp
+    using UnityEngine;
+    using UnityEngine.UI;
+
+    namespace ProgramadorCastellano.CentralisedUI
+    {
+        [CreateAssetMenu(menuName = "ProgramadorCastellano/CentralisedUI/SpriteSwap", order = 2)]
+        public class CentralisedUISpriteSwapSO : ScriptableObject
+        {
+            [SerializeField] SpriteState _sprites;
+            public SpriteState Sprites => _sprites;
+        }
+    }
+    ```
+
+    #### Properties
+
+    | Property | Type | Description |
+    |----------|------|-------------|
+    | `_sprites` | `SpriteState` | Serialized field containing sprite references |
+    | `Sprites` | `SpriteState` | Public getter for read-only access |
+
+    #### SpriteState Contents
+
+    The `SpriteState` struct contains:
+    - `highlightedSprite` - Sprite for hover state
+    - `pressedSprite` - Sprite for pressed state
+    - `selectedSprite` - Sprite for selected state
+    - `disabledSprite` - Sprite for disabled state
+
+    <Warning>
+      There is no "normal" sprite in SpriteState. The normal sprite comes from the Image component's `sprite` field.
+    </Warning>
+
+    #### Creation
+
+    **Menu Path**: `Assets > Create > ProgramadorCastellano/CentralisedUI/SpriteSwap`
+
+    #### Usage Example
+
+    ```csharp
+    // This happens automatically in CentralisedUIData.cs:37
+    _selectable.spriteState = _spriteSwapSO.Sprites;
+    ```
+
+    #### Best Practices
+
+    - Name assets by sprite set: `SpriteSwap_RoundButton`, `SpriteSwap_PixelButton`
+    - Ensure all sprites have the same dimensions
+    - Use consistent pivot points across all state sprites
+    - Keep sprites in the same atlas for performance
+    - You can leave some states null if not needed (e.g., no selected sprite)
+
+    <Info>
+      Sprite Swap is particularly useful for pixel-art games where color tinting would lose the crisp pixel aesthetic.
+    </Info>
+  </Accordion>
+
+  <Accordion title="CentralisedUIAnimationSO" icon="film">
+    ### CentralisedUIAnimationSO
+
+    Stores animation trigger names for the Animation transition mode.
+
+    #### Class Structure
+
+    ```csharp
+    using UnityEngine;
+    using UnityEngine.UI;
+
+    namespace ProgramadorCastellano.CentralisedUI
+    {
+        [CreateAssetMenu(menuName = "ProgramadorCastellano/CentralisedUI/Animation", order = 3)]
+        public class CentralisedUIAnimationSO : ScriptableObject
+        {
+            [SerializeField] AnimationTriggers _animations;
+            public AnimationTriggers Animations => _animations;
+        }
+    }
+    ```
+
+    #### Properties
+
+    | Property | Type | Description |
+    |----------|------|-------------|
+    | `_animations` | `AnimationTriggers` | Serialized field containing trigger names |
+    | `Animations` | `AnimationTriggers` | Public getter for read-only access |
+
+    #### AnimationTriggers Contents
+
+    The `AnimationTriggers` class contains:
+    - `normalTrigger` - Trigger name for normal state (string)
+    - `highlightedTrigger` - Trigger name for highlighted state
+    - `pressedTrigger` - Trigger name for pressed state
+    - `selectedTrigger` - Trigger name for selected state
+    - `disabledTrigger` - Trigger name for disabled state
+
+    <Note>
+      These are **trigger parameter names**, not animation clip names. They must match the trigger parameters in your Animator Controller.
+    </Note>
+
+    #### Creation
+
+    **Menu Path**: `Assets > Create > ProgramadorCastellano/CentralisedUI/Animation`
+
+    #### Usage Example
+
+    ```csharp
+    // This happens automatically in CentralisedUIData.cs:38
+    _selectable.animationTriggers = _animationSO.Animations;
+    ```
+
+    #### Requirements
+
+    To use this ScriptableObject, you need:
+    1. An **Animator** component on your UI element
+    2. An **Animator Controller** with trigger parameters
+    3. **Animation clips** for each state transition
+    4. Matching trigger names between the SO and the controller
+
+    #### Best Practices
+
+    - Use consistent trigger naming: `Normal`, `Highlighted`, `Pressed`, `Selected`, `Disabled`
+    - Name assets by animation style: `Animation_Bounce`, `Animation_Scale`, `Animation_Slide`
+    - Create one Animator Controller that works with multiple Animation SOs
+    - Use the same trigger names across all your UI Animator Controllers
+    - Document which Animator Controller each Animation SO is designed for
+
+    <Tip>
+      **Standardization**: Create a standard set of trigger names (e.g., "Normal", "Highlighted", "Pressed") and use them across all your UI Animator Controllers. This allows one Animation SO to work with multiple controllers.
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+## Creating ScriptableObjects
+
+All three ScriptableObject types use Unity's `[CreateAssetMenu]` attribute, making them easy to create:
+
+<Steps>
+  <Step title="Open Create Menu">
+    Right-click in the Project window or use `Assets > Create` from the menu bar
+  </Step>
+  <Step title="Navigate to Menu">
+    Navigate to `ProgramadorCastellano > CentralisedUI`
+  </Step>
+  <Step title="Select Type">
+    Choose `ColorTint`, `SpriteSwap`, or `Animation`
+  </Step>
+  <Step title="Name Asset">
+    Give the asset a descriptive name
+  </Step>
+  <Step title="Configure">
+    Select the asset and configure its properties in the Inspector
+  </Step>
+</Steps>
+
+## Organizing ScriptableObjects
+
+<Note>
+  **Recommended Folder Structure**:
+  ```text
+  Assets/
+  └── UI/
+      └── Themes/
+          ├── ColorTints/
+          │   ├── ColorTint_PrimaryButton.asset
+          │   ├── ColorTint_SecondaryButton.asset
+          │   └── ColorTint_DangerButton.asset
+          ├── SpriteSwaps/
+          │   ├── SpriteSwap_RoundButton.asset
+          │   └── SpriteSwap_SquareButton.asset
+          └── Animations/
+              ├── Animation_Bounce.asset
+              └── Animation_Scale.asset
+  ```
+</Note>
+
+### Naming Conventions
+
+Use descriptive, consistent names:
+
+- **ColorTint**: `ColorTint_[Purpose]` (e.g., `ColorTint_PrimaryButton`, `ColorTint_MenuToggle`)
+- **SpriteSwap**: `SpriteSwap_[Style]` (e.g., `SpriteSwap_PixelButton`, `SpriteSwap_RoundButton`)
+- **Animation**: `Animation_[Effect]` (e.g., `Animation_Bounce`, `Animation_ScaleUp`)
+
+<Tip>
+  Prefix with the theme name for multi-theme projects: `DarkTheme_ColorTint_PrimaryButton`, `LightTheme_ColorTint_PrimaryButton`
+</Tip>
+
+## The Public Getter Pattern
+
+All three ScriptableObject classes use the same pattern:
+
+```csharp
+[SerializeField] private DataType _data;
+public DataType PropertyName => _data;
+```
+
+This provides:
+- **Serialization**: The `[SerializeField]` allows editing in the Inspector
+- **Encapsulation**: The private field prevents external modification
+- **Read-Only Access**: The public getter provides safe read access
+- **Expression Body**: The `=>` syntax creates a clean, concise getter
+
+<Warning>
+  Never modify the ColorBlock, SpriteState, or AnimationTriggers at runtime through the ScriptableObject. These are meant to be immutable data sources. If you need runtime changes, modify the Selectable component directly.
+</Warning>
+
+## ScriptableObjects vs. Prefabs
+
+| Aspect | ScriptableObjects | Prefabs |
+|--------|------------------|--------|
+| **Contains** | Data only | Full GameObject hierarchy |
+| **Memory** | Shared instance | Instantiated per object |
+| **Updates** | Automatic for all references | Requires prefab instance updates |
+| **Best For** | Shared, reusable data | Complete, instantiable objects |
+| **Use in Centralised UI** | Store styling data | Store complete UI element templates |
+
+<Tip>
+  **Best Practice**: Create prefabs for your UI elements that reference ScriptableObjects. This combines the benefits of both systems - reusable structure (prefab) with centralized data (ScriptableObject).
+</Tip>
+
+## Advanced: Creating Themes
+
+ScriptableObjects make theme systems trivial to implement:
+
+```csharp
+// Example: ThemeManager.cs (not included in package)
+public class ThemeManager : MonoBehaviour
+{
+    [SerializeField] CentralisedUIColorTintSO darkThemeButton;
+    [SerializeField] CentralisedUIColorTintSO lightThemeButton;
+    
+    public void ApplyDarkTheme()
+    {
+        // Swap ScriptableObject references on all buttons
+        // Call OnSkinUI() to apply changes
+    }
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/quickstart">
+    Create your first ScriptableObjects and apply them to UI elements
+  </Card>
+  <Card title="Transition Modes" icon="palette" href="/concepts/transition-modes">
+    Learn when to use each ScriptableObject type
+  </Card>
+</CardGroup>

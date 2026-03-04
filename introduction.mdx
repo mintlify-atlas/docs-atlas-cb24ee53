@@ -1,0 +1,99 @@
+---
+title: Introduction
+description: Centralize and manage UI styling across your Unity project with ScriptableObject-based configurations
+---
+
+## What is Centralised UI?
+
+Centralised UI is a Unity package that allows you to modify the colors, images, and animations of your selectable UI elements in a centralized way. Instead of manually configuring each Button, Toggle, Slider, or other UI element individually, you can create reusable ScriptableObject assets that define your UI styling and apply them across multiple elements.
+
+## The Problem It Solves
+
+When building UI-heavy Unity applications, you often face these challenges:
+
+- **Repetitive Configuration**: Setting the same color schemes, sprite states, or animations on dozens of buttons manually
+- **Inconsistent Styling**: Accidentally using different color values across similar UI elements
+- **Difficult Updates**: Needing to update each UI element individually when your design changes
+- **No Single Source of Truth**: Scattered UI styling data across multiple GameObjects in your scenes
+
+Centralised UI solves these problems by providing a ScriptableObject-based system for managing UI element styling.
+
+## How It Works
+
+The package provides a `CentralisedUIData` component that you add to any Unity Selectable (Button, Toggle, Slider, etc.). This component references ScriptableObject assets that contain your styling configuration:
+
+<CardGroup cols={3}>
+  <Card title="ColorTint" icon="palette">
+    Define `ColorBlock` values for normal, highlighted, pressed, selected, and disabled states
+  </Card>
+  <Card title="SpriteSwap" icon="image">
+    Configure `SpriteState` with different sprites for highlighted, pressed, selected, and disabled states
+  </Card>
+  <Card title="Animation" icon="play">
+    Set up `AnimationTriggers` for normal, highlighted, pressed, selected, and disabled animations
+  </Card>
+</CardGroup>
+
+## Key Features
+
+- **ScriptableObject-Based Architecture**: Create reusable UI styling assets that live in your project
+- **Support for All Transition Types**: Works with ColorTint, SpriteSwap, and Animation transition modes
+- **Editor Integration**: Apply skins directly in the Editor or automatically at runtime
+- **Namespace Organization**: Clean API under `ProgramadorCastellano.CentralisedUI`
+- **Prefab Samples**: Includes ready-to-use prefabs for all Unity selectables with the component pre-configured
+
+## Key Concepts
+
+### CentralisedUIData Component
+
+The main component (`CentralisedUIData`) that you add to your UI elements. It requires a `Selectable` component and manages:
+
+- **Transition Mode**: Which transition type to use (ColorTint, SpriteSwap, Animation, or None)
+- **ScriptableObject References**: Links to your styling assets
+- **Apply Skin**: Method to update the Selectable with the configured styling
+
+### ScriptableObject Styling Assets
+
+Three types of ScriptableObjects store your UI styling data:
+
+- `CentralisedUIColorTintSO`: Contains a `ColorBlock` with color values for all UI states
+- `CentralisedUISpriteSwapSO`: Contains a `SpriteState` with sprite references for different states
+- `CentralisedUIAnimationSO`: Contains `AnimationTriggers` with trigger names for animations
+
+### Runtime Application
+
+The `CentralisedUIData` component automatically applies your styling configuration:
+
+- On `Awake()` in Play mode
+- When you click "Apply Skin" in the Editor
+- Updates the underlying `Selectable` component's `colors`, `spriteState`, or `animationTriggers` properties
+
+## What You'll Learn
+
+This documentation will guide you through:
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Install the package via Unity Package Manager using Git URL or manual import
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Get your first styled UI element working in under 5 minutes
+  </Card>
+  <Card title="Core Concepts" icon="book" href="/concepts/overview">
+    Understand the architecture and how to create reusable UI styling systems
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/centralised-ui-data">
+    Explore the complete API for components and ScriptableObjects
+  </Card>
+</CardGroup>
+
+## Requirements
+
+- **Unity Version**: 2022.3 or higher
+- **Dependencies**: TextMeshPro 3.0.6 (automatically installed)
+
+## Next Steps
+
+<Card title="Get Started with Installation" icon="arrow-right" href="/installation">
+  Install Centralised UI in your Unity project and verify the setup
+</Card>

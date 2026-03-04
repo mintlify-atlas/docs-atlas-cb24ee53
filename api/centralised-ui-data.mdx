@@ -1,0 +1,228 @@
+---
+title: 'CentralisedUIData'
+description: 'Core component for applying centralized UI styling to Unity UI Selectables'
+---
+
+## Overview
+
+`CentralisedUIData` is the main component that applies centralized styling to Unity UI Selectable components (Button, Toggle, Slider, etc.). It manages different transition modes and applies the corresponding ScriptableObject configurations.
+
+## Class Declaration
+
+```csharp
+namespace ProgramadorCastellano.CentralisedUI
+{
+    [RequireComponent(typeof(Selectable))]
+    public class CentralisedUIData : MonoBehaviour
+    {
+        // ...
+    }
+}
+```
+
+<Note>
+This component requires a `Selectable` component (or derived type) to be present on the same GameObject.
+</Note>
+
+## Serialized Fields
+
+<ParamField path="_transitionMode" type="Selectable.Transition" default="Selectable.Transition.ColorTint">
+  Determines which transition mode to use for the UI element. Can be ColorTint, SpriteSwap, or Animation.
+</ParamField>
+
+<ParamField path="_colorTintSO" type="CentralisedUIColorTintSO">
+  Reference to the ColorTint ScriptableObject containing color configurations for different UI states.
+</ParamField>
+
+<ParamField path="_spriteSwapSO" type="CentralisedUISpriteSwapSO">
+  Reference to the SpriteSwap ScriptableObject containing sprite configurations for different UI states.
+</ParamField>
+
+<ParamField path="_animationSO" type="CentralisedUIAnimationSO">
+  Reference to the Animation ScriptableObject containing animation trigger configurations for different UI states.
+</ParamField>
+
+## Methods
+
+### Awake()
+
+```csharp
+private void Awake()
+```
+
+Unity lifecycle method that initializes the component and applies the UI skin automatically when the GameObject is instantiated.
+
+**Implementation:**
+```csharp
+private void Awake()
+{
+    Initialize();
+    OnSkinUI();
+}
+```
+
+### Initialize()
+
+```csharp
+private void Initialize()
+```
+
+Initializes the component by caching the Selectable reference and setting up the transition actions dictionary.
+
+**Implementation:**
+```csharp
+private void Initialize()
+{
+    _selectable = GetComponent<Selectable>();
+
+    _transitionActions = new Dictionary<Selectable.Transition, UnityAction>()
+    {
+        { Selectable.Transition.ColorTint, () => _selectable.colors = _colorTintSO.Colors },
+        { Selectable.Transition.SpriteSwap, () => _selectable.spriteState = _spriteSwapSO.Sprites },
+        { Selectable.Transition.Animation, () => _selectable.animationTriggers = _animationSO.Animations }
+    };
+}
+```
+
+<Accordion title="Dictionary Pattern Explanation">
+The `_transitionActions` dictionary maps each transition mode to its corresponding action:
+- **ColorTint**: Applies the ColorBlock from the ColorTint ScriptableObject
+- **SpriteSwap**: Applies the SpriteState from the SpriteSwap ScriptableObject
+- **Animation**: Applies the AnimationTriggers from the Animation ScriptableObject
+
+This pattern allows for clean, extensible transition mode handling.
+</Accordion>
+
+### OnSkinUI()
+
+```csharp
+public void OnSkinUI()
+```
+
+Applies the UI skin based on the selected transition mode. This method is called automatically during `Awake()` and can also be invoked from the Unity Editor.
+
+**Implementation:**
+```csharp
+public void OnSkinUI()
+{
+#if UNITY_EDITOR
+    // only happens when it is invoked from the editor
+    if (_selectable == null || _transitionActions == null) {
+        Initialize();
+    }
+#endif
+    _selectable.transition = _transitionMode;
+    if (!_transitionActions.ContainsKey(_transitionMode)) {
+        Debug.LogWarning($"Transition mode '{_transitionMode}' not implemented");
+    }
+    else {
+        _transitionActions[_transitionMode]?.Invoke();
+    }
+}
+```
+
+<Note>
+`OnSkinUI()` is called in two scenarios:
+1. **Automatically** during `Awake()` when the GameObject is instantiated at runtime
+2. **Manually** when triggered from a custom editor button (editor only)
+
+The method includes editor-only initialization checks to ensure it works correctly when invoked from the editor.
+</Note>
+
+## Usage Example
+
+```csharp
+using UnityEngine;
+using UnityEngine.UI;
+using ProgramadorCastellano.CentralisedUI;
+
+public class UIExample : MonoBehaviour
+{
+    void Start()
+    {
+        // Get the CentralisedUIData component
+        CentralisedUIData uiData = GetComponent<CentralisedUIData>();
+        
+        // The skin is automatically applied in Awake()
+        // But you can manually trigger it if needed:
+        uiData.OnSkinUI();
+    }
+}
+```
+
+## Unity Lifecycle Integration
+
+The component integrates seamlessly with Unity's lifecycle:
+
+1. **Awake()**: Component initializes and applies styling automatically
+2. **Editor Time**: Can be triggered manually via custom editor button
+3. **Runtime**: Styling is applied once during initialization
+
+<Accordion title="Complete Source Code">
+```csharp
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
+
+namespace ProgramadorCastellano.CentralisedUI
+{
+    [RequireComponent(typeof(Selectable))]
+    public class CentralisedUIData : MonoBehaviour
+    {
+        [SerializeField] Selectable.Transition _transitionMode = Selectable.Transition.ColorTint;
+
+        [Header("Color Tint")]
+        [SerializeField] CentralisedUIColorTintSO _colorTintSO = default;
+        [Header("Sprite Swap")]
+        [SerializeField] CentralisedUISpriteSwapSO _spriteSwapSO = default;
+        [Header("Animation")]
+        [SerializeField] CentralisedUIAnimationSO _animationSO = default;
+
+        private Selectable _selectable;
+        private Dictionary<Selectable.Transition, UnityAction> _transitionActions;
+
+        private void Awake()
+        {
+            Initialize();
+            OnSkinUI();
+        }
+
+        private void Initialize()
+        {
+            _selectable = GetComponent<Selectable>();
+
+            _transitionActions = new Dictionary<Selectable.Transition, UnityAction>()
+            {
+                { Selectable.Transition.ColorTint, () => _selectable.colors = _colorTintSO.Colors },
+                { Selectable.Transition.SpriteSwap, () => _selectable.spriteState = _spriteSwapSO.Sprites },
+                { Selectable.Transition.Animation, () => _selectable.animationTriggers = _animationSO.Animations }
+            };
+        }
+
+        public void OnSkinUI()
+        {
+#if UNITY_EDITOR
+            if (_selectable == null || _transitionActions == null) {
+                Initialize();
+            }
+#endif
+            _selectable.transition = _transitionMode;
+            if (!_transitionActions.ContainsKey(_transitionMode)) {
+                Debug.LogWarning($"Transition mode '{_transitionMode}' not implemented");
+            }
+            else {
+                _transitionActions[_transitionMode]?.Invoke();
+            }
+        }
+    }
+}
+```
+</Accordion>
+
+## Assembly Information
+
+- **Namespace**: `ProgramadorCastellano.CentralisedUI`
+- **Assembly**: ProgramadorCastellano.CentralisedUI.Runtime
+- **Inherits from**: `MonoBehaviour`
+- **Required Components**: `Selectable`
