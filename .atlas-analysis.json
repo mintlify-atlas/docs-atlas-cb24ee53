@@ -1,0 +1,62 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "Centralised UI",
+  "projectDescription": "A Unity package that enables centralized management of UI element styling through ScriptableObjects for colors, sprites, and animations.",
+  "theme": "palm",
+  "primaryColor": "#5B47E5",
+  "lightColor": "#8B7FF5",
+  "darkColor": "#3D2FB5",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Get Started",
+        "pages": [
+          "introduction",
+          "installation",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Core Concepts",
+        "pages": [
+          "concepts/overview",
+          "concepts/transition-modes",
+          "concepts/scriptable-objects"
+        ]
+      },
+      {
+        "group": "Guides",
+        "pages": [
+          "guides/adding-component",
+          "guides/creating-scriptable-objects",
+          "guides/applying-skins",
+          "guides/prefabs"
+        ]
+      },
+      {
+        "group": "API Reference",
+        "pages": [
+          "api/centralised-ui-data",
+          "api/color-tint-so",
+          "api/sprite-swap-so",
+          "api/animation-so"
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Centralized UI styling through ScriptableObjects",
+    "Support for ColorTint, SpriteSwap, and Animation transitions",
+    "Editor integration with custom inspectors",
+    "Reusable UI styling across multiple selectables",
+    "Unity Editor menu extensions for quick GameObject creation"
+  ],
+  "publicApiSurface": [
+    "CentralisedUIData component",
+    "CentralisedUIColorTintSO",
+    "CentralisedUISpriteSwapSO",
+    "CentralisedUIAnimationSO",
+    "OnSkinUI() method",
+    "TransitionMode property"
+  ]
+}
